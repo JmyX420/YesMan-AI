@@ -1,5 +1,35 @@
+# Line endings: keep the whole repo LF-canonical — stored as LF AND checked out as
+# LF on every platform. This stops the "LF will be replaced by CRLF" churn on Windows
+# and, crucially, keeps the bash scripts (hooks, install/CLI) and the in-game GECK
+# Script Runner files (live-link/game/**/*.txt) working when cloned on any OS.
+* text=auto eol=lf
+
+# Explicit LF for the files where CRLF would actually break something (documented intent).
+*.sh                     text eol=lf
+*.py                     text eol=lf
+*.js                     text eol=lf
+*.iss                    text eol=lf
+live-link/game/**/*.txt  text eol=lf
+
+# Binary assets — never apply line-ending or diff conversion (covers future media/tools).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.ico binary
+*.exe binary
+*.dll binary
+*.dat binary
+*.bsa binary
+*.nif binary
+*.dds binary
+*.ogg binary
+*.fos binary
+*.zip binary
+
 # Dev-only planning/port records — kept in the repo for history, excluded from
-# release archives built with `git archive` (so the shipped zip stays clean).
+# release archives built with `git archive` (so a shipped zip stays clean).
 BUILD_PLAN.md            export-ignore
 live-link/PORT_PLAN.md   export-ignore
 mo2-mcp/PORT_PLAN.md     export-ignore
