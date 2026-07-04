@@ -1,0 +1,5 @@
+# Dev-only planning/port records — kept in the repo for history, excluded from
+# release archives built with `git archive` (so the shipped zip stays clean).
+BUILD_PLAN.md            export-ignore
+live-link/PORT_PLAN.md   export-ignore
+mo2-mcp/PORT_PLAN.md     export-ignore

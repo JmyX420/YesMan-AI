@@ -1,0 +1,13 @@
+{
+  "//": "Copy this to settings.local.json to pre-approve safe, read-only commands and cut down on permission prompts. These are examples — adjust to taste. Writes to game files stay gated by the hooks regardless.",
+  "permissions": {
+    "allow": [
+      "Bash(node examples/inspect-esp.js:*)",
+      "Bash(node examples/diff-esp.js:*)",
+      "Bash(node scripts/read-fos.js:*)",
+      "Bash(npm install)",
+      "Bash(node --version)",
+      "Bash(BSArch.exe list:*)"
+    ]
+  }
+}

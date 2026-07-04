@@ -1,0 +1,26 @@
+; ln_FNVLinkEvtExit.txt
+; YesMan AI Live Link — session-exit lifecycle events (xNVSE). ISOLATED in its own ln_ script so a
+; compile/registration hiccup here can't take down the confident base events in ln_FNVLinkEvt.txt.
+;
+; Both are xNVSE engine events (registered with SetEventHandler, same family as SaveGame/LoadGame)
+; that fire as the player LEAVES the loaded game — letting Claude notice the session ended without
+; being told. Subject-less; each batch records {seq, type, gamehour}.
+;   ExitToMainMenu — player quit the loaded game to the title screen (validated live: fires on
+;                    session unload, incl. as part of a quit-to-desktop).
+;   ExitGame       — player quit to desktop (validated live; the append flushed before exit,
+;                    though that is best-effort on a hard process kill).
+;
+; DROPPED (don't dispatch in this xNVSE build, and redundant anyway): MainMenu (the title screen
+; appears AFTER the session + this handler unload — teardown race; "at title" is already known
+; from ExitToMainMenu + the heartbeat going stale) and PostLoadGame (never fired; `load` already
+; signals a save loaded). See the toolbox history for the live test that settled this.
+
+printc "FNVLink: registering exit_to_main_menu / exit_game handlers."
+
+SetEventHandler "ExitToMainMenu" (begin function {}
+    RunBatchScript "FNVLink/evt_exit_to_main_menu.txt"
+end)
+
+SetEventHandler "ExitGame" (begin function {}
+    RunBatchScript "FNVLink/evt_exit_game.txt"
+end)

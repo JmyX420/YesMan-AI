@@ -1,0 +1,25 @@
+; ln_FNVLinkCmd.txt
+; YesMan AI Live Link — command channel. SEPARATE ln_ script from the heartbeat so Script Runner
+; compiles it independently. Part of YesMan AI live link (MIT, see NOTICE).
+;
+; *** THE PHASE-4 BUG, and why this is tiny ***
+; GECK caps any expression inside parentheses at 512 characters. The whole callback lambda
+; lives inside  SetGameMainLoopCallback ( ... )  — so a full command-handler lambda (~700
+; chars) SILENTLY fails to compile and the callback never registers (no error in the JIP log;
+; only the in-game console shows "Max script expression length inside parenthesis (512
+; characters) exceeded"). The heartbeat works only because its lambda is under 512.
+;
+; Fix: keep the lambda trivial — just run the dispatcher batch. RunBatchScript has no such
+; limit, caches its compile, and re-reads cmd.json fresh every tick, so command detection
+; still works. dispatch.txt is materialized into the bridge dir (game root\FNVLink\) by the
+; Python relay on startup — see bridge.py seed().
+
+if GetPluginVersion "JIP LN NVSE" < 57
+    return
+endif
+
+printc "FNVLink: command channel starting."
+
+SetGameMainLoopCallback (begin function {}
+    RunBatchScript "FNVLink/dispatch.txt"
+end) 1 45 3

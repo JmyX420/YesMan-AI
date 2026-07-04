@@ -1,0 +1,14 @@
+{
+  "name": "yesman-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "YesMan AI — ESP backbone (xEditLib, gmFNV) and helper scripts.",
+  "license": "MIT",
+  "dependencies": {
+    "xeditlib": "github:WingedGuardian/xeditlib"
+  },
+  "scripts": {
+    "inspect": "node examples/inspect-esp.js",
+    "diff": "node examples/diff-esp.js"
+  }
+}

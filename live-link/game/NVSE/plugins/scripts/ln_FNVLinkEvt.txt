@@ -1,0 +1,260 @@
+; ln_FNVLinkEvt.txt
+; YesMan AI Live Link — event channel. SEPARATE ln_ script (independent compile). Part of the
+; YesMan AI live link (MIT, see NOTICE).
+;
+; Registers an NVSE OnDeath handler so the running game PUSHES death events to the relay
+; (game -> Claude), rather than Claude polling player state. OnDeath args are
+; {Killed:actorRef, Killer:actorRef}; the "second"::playerref filter limits this to actors
+; the PLAYER kills (cheap + easy to test). The handler is intentionally tiny — it just runs
+; the relay-materialised evt_death.txt batch — because the handler lambda lives inside
+; SetEventHandler's parens and GECK caps a parenthesised expression at 512 chars (the same
+; trap that bit the command channel). evt_death.txt appends {seq,type,gamehour} to
+; events.json; the relay's fnv_poll_events reads new entries by seq cursor.
+;
+; NOTE: NVSE event handlers are session-only (not saved). ln_ runs on every load; for the
+; MVP we register unconditionally (a full restart between deploys means one registration).
+; Proper per-session dedup via GetGameRestarted / a temp aux var is a follow-up.
+
+if GetPluginVersion "JIP LN NVSE" < 57
+    return
+endif
+
+printc "FNVLink: registering event handlers (kills, combat, items, travel, save/load)."
+
+; Stash the killed actor (OnDeath arg 1) into an aux ref so evt_death.txt can enrich the
+; event with the actor's name + FormID, then delegate. (Handler stays tiny for the 512
+; limit; param name 'rKilledRef' — NOT 'rK', which collides with a reserved command.)
+SetEventHandler "OnDeath" (begin function {ref rKilledRef, ref rKillerRef}
+    Player.AuxVarSetRef "FNVLink_evactor" rKilledRef
+    RunBatchScript "FNVLink/evt_death.txt"
+end) "second"::playerref
+
+; OnMurder = the player killed a non-aggressor (karma/reputation event). Same stash->batch
+; pattern; OnMurder args are {Murdered, Murderer}. A murder also fires OnDeath, so it yields
+; both a "death" and a "murder" event for the same kill.
+SetEventHandler "OnMurder" (begin function {ref rMurderedRef, ref rMurdererRef}
+    Player.AuxVarSetRef "FNVLink_evactor" rMurderedRef
+    RunBatchScript "FNVLink/evt_murder.txt"
+end) "second"::playerref
+
+; OnStartCombat {Target, Starter}. Which arg is the player isn't guaranteed, so register two
+; filtered handlers — player-as-Target and player-as-Starter — each recording the OTHER
+; combatant (the enemy). Filtering to playerref also avoids NPC-vs-NPC combat spam. A combat
+; can't have the player as both, so these never double-fire for one event.
+SetEventHandler "OnStartCombat" (begin function {ref rFnvCombA, ref rFnvCombB}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvCombB
+    RunBatchScript "FNVLink/evt_combat.txt"
+end) "first"::playerref
+SetEventHandler "OnStartCombat" (begin function {ref rFnvCombA, ref rFnvCombB}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvCombA
+    RunBatchScript "FNVLink/evt_combat.txt"
+end) "second"::playerref
+
+; ---- item events (action-paced; record the ITEM via the same stash->batch pattern) ----
+; OnAdd {AddedItem(world ref), AddedTo} — player picks an item up off the world.
+SetEventHandler "OnAdd" (begin function {ref rFnvItem, ref rFnvCont}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvItem
+    RunBatchScript "FNVLink/evt_pickup.txt"
+end) "second"::playerref
+
+; OnSell {SoldInvItem(base form), Seller} — player sells an item to a vendor.
+SetEventHandler "OnSell" (begin function {ref rFnvItem, ref rFnvSeller}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvItem
+    RunBatchScript "FNVLink/evt_sell.txt"
+end) "second"::playerref
+
+; OnActorEquip {Equipper, Equipped(base form)} — player equips an item.
+SetEventHandler "OnActorEquip" (begin function {ref rFnvEquipper, ref rFnvItem}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvItem
+    RunBatchScript "FNVLink/evt_equip.txt"
+end) "first"::playerref
+
+; OnActorUnequip {Equipper, Unequipped(base form)} — player unequips an item. Mirrors equip.
+SetEventHandler "OnActorUnequip" (begin function {ref rFnvEquipper, ref rFnvItem}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvItem
+    RunBatchScript "FNVLink/evt_unequip.txt"
+end) "first"::playerref
+
+; OnCellEnter {EnteredCell} — player entered a new cell (JIP; player-scoped, arg = the cell).
+; No actor filter (the arg is a Cell, not an actor; the event only fires for the player). The
+; evt_cell_enter batch NAME-DEDUPES so repeated "Mojave Wasteland" exterior-grid crossings don't
+; spam — only entering a differently-named cell emits.
+SetEventHandler "OnCellEnter" (begin function {ref rFnvCellArg}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvCellArg
+    RunBatchScript "FNVLink/evt_cell_enter.txt"
+end)
+
+; (OnOpen / 'open' event was DROPPED — unfiltered OnOpen does not dispatch: OnOpen/OnClose are
+; object-scoped events that need a "first"::<ref/formlist> filter naming which objects to watch,
+; so a generic version would require a formlist of every container/door (impractical). Confirmed
+; live with Just Loot Menu both ON and OFF: opening containers never fired it. Redundant with
+; pickup (container loot) + cell_enter (building entries) anyway.)
+
+; ShowOff:OnReadBook — the player read a Book (skill book / note / etc.). Calling ref is ALWAYS
+; the player, so no filter; the single arg is the book BaseForm. Catches BOOK-type items that
+; aid_use (ALCH only) misses. No-ops cleanly if ShowOff NVSE is absent (generic SetEventHandler).
+SetEventHandler "ShowOff:OnReadBook" (begin function {ref rFnvBook}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvBook
+    RunBatchScript "FNVLink/evt_read_book.txt"
+end)
+
+; ITR:OnSteal {thief, target, item, owner, qty} — filter "first"::playerref so only the PLAYER's
+; thefts fire; record arg3 (the stolen item BaseForm). No-ops cleanly if itr-nvse is absent.
+SetEventHandler "ITR:OnSteal" (begin function {ref rFnvThief, ref rFnvStTarget, ref rFnvStItem, ref rFnvStOwner, int iFnvStQty}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvStItem
+    RunBatchScript "FNVLink/evt_steal.txt"
+end) "first"::playerref
+
+; ---- combat end ----
+; OnCombatEnd {Target, Ender} — Target is the actor dropping out of combat (args confirmed via
+; the NVSE_Event_Handling table). The player-filtered two-handler form (mirroring OnStartCombat)
+; did NOT fire in live testing, even after a fully clean disengage with the link confirmed
+; live — the "first"/"second"::playerref filter appears not to match for this event. So we
+; register ONE UNFILTERED handler and record the Target. It fires for every actor that leaves
+; combat; in the player's own fights that's the enemies disengaging/dying, which is exactly the
+; "fight's over" signal we want. (If NPC-vs-NPC elsewhere proves noisy, add a player-proximity
+; or player-involvement guard in evt_combat_end.txt.)
+SetEventHandler "OnCombatEnd" (begin function {ref rFnvCEa, ref rFnvCEb}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvCEa
+    RunBatchScript "FNVLink/evt_combat_end.txt"
+end)
+
+; ---- exploration ----
+; SetOnLocationDiscoverEventHandler (JIP) fires when the player discovers a new location and
+; unlocks its map marker; the single handler arg is the discovered map-marker ref, which we
+; stash so evt_discover.txt can name the place. Signature: handlerScript THEN setORremove(1).
+SetOnLocationDiscoverEventHandler (begin function {ref rFnvMarker}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvMarker
+    RunBatchScript "FNVLink/evt_discover.txt"
+end) 1
+
+; ---- session boundaries (subject-less; the batch records only type/seq/gamehour) ----
+; SaveGame {sSaveFileName} — the player saved. LoadGame {sSaveFileName} — a save was loaded.
+; No ref to filter on; the handler just declares the string arg (unused) and delegates.
+SetEventHandler "SaveGame" (begin function {string_var sFnvSave}
+    RunBatchScript "FNVLink/evt_save.txt"
+end)
+SetEventHandler "LoadGame" (begin function {string_var sFnvLoad}
+    RunBatchScript "FNVLink/evt_load.txt"
+end)
+
+; SetOnFastTravelEventHandler (JIP) fires when the player fast-travels; the single handler arg
+; is the destination marker ref (same shape as OnLocationDiscover), so evt_fast_travel.txt
+; names where they went. Signature: handlerScript THEN setORremove(1).
+SetOnFastTravelEventHandler (begin function {ref rFnvDest}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvDest
+    RunBatchScript "FNVLink/evt_fast_travel.txt"
+end) 1
+
+; ---- weapon reload ----
+; SetOnReloadWeaponEventHandler (JIP) fires when ANY actor reloads — it has NO filter param, so
+; we guard to the player via GetSelf==Player; the single arg is the reloaded weapon BaseForm.
+; Combat-frequent (one per magazine) but player-only. Signature: handlerScript THEN setORremove(1).
+SetOnReloadWeaponEventHandler (begin function {ref rFnvReloadWeap}
+    if eval (GetSelf == Player)
+        Player.AuxVarSetRef "FNVLink_evactor" rFnvReloadWeap
+        RunBatchScript "FNVLink/evt_reload.txt"
+    endif
+end) 1
+
+; ShowOff:OnWeaponHolster / OnWeaponUnholster — player sheathed/drew a weapon. Calling ref is the
+; actor (GetSelf), so guard to the player; the single arg is the weapon BaseForm. No-op if ShowOff
+; absent. Moderately chatty (auto-holster on dialogue/sitting).
+; && rFnvHWeap: skip the null-weapon case (e.g. the load-time auto-unholster while unarmed), which
+; would otherwise record a stale name from the shared FNVLink_evactor stash.
+SetEventHandler "ShowOff:OnWeaponHolster" (begin function {ref rFnvHWeap}
+    if eval ((GetSelf == Player) && rFnvHWeap)
+        Player.AuxVarSetRef "FNVLink_evactor" rFnvHWeap
+        RunBatchScript "FNVLink/evt_holster.txt"
+    endif
+end)
+
+SetEventHandler "ShowOff:OnWeaponUnholster" (begin function {ref rFnvUWeap}
+    if eval ((GetSelf == Player) && rFnvUWeap)
+        Player.AuxVarSetRef "FNVLink_evactor" rFnvUWeap
+        RunBatchScript "FNVLink/evt_unholster.txt"
+    endif
+end)
+
+; ITR:OnVATSEnter {target} — VATS firing playback began (player-only); arg = the VATS target (may
+; be 0 → empty name/form). No-op if itr-nvse absent.
+SetEventHandler "ITR:OnVATSEnter" (begin function {ref rFnvVatsTgt}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvVatsTgt
+    RunBatchScript "FNVLink/evt_vats_enter.txt"
+end)
+
+; ITR:OnVATSLeave {int kills} — VATS ended (player-only); arg = kills recorded in VATS. Stash the
+; INT (not a ref) via AuxVarSetFlt; evt_vats_leave records a 'kills' field.
+SetEventHandler "ITR:OnVATSLeave" (begin function {int iFnvVatsKills}
+    Player.AuxVarSetFlt "FNVLink_evnum" iFnvVatsKills
+    RunBatchScript "FNVLink/evt_vats_leave.txt"
+end)
+
+; ITR:OnKillCamStart / OnKillCamEnd {actor} — a killcam (VATS or non-VATS) began/ended on the
+; player's kill; arg = the killcam target (End's may be 0 if the FormID no longer resolves).
+SetEventHandler "ITR:OnKillCamStart" (begin function {ref rFnvKcStart}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvKcStart
+    RunBatchScript "FNVLink/evt_killcam_start.txt"
+end)
+
+SetEventHandler "ITR:OnKillCamEnd" (begin function {ref rFnvKcEnd}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvKcEnd
+    RunBatchScript "FNVLink/evt_killcam_end.txt"
+end)
+
+; ITR:OnWeaponJam {actor, weapon} — fires for any actor; filter "first"::playerref so only the
+; PLAYER's jams fire; record arg2 (the jammed weapon).
+SetEventHandler "ITR:OnWeaponJam" (begin function {ref rFnvJamActor, ref rFnvJamWeap}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvJamWeap
+    RunBatchScript "FNVLink/evt_weapon_jam.txt"
+end) "first"::playerref
+
+; ITR:OnCasinoBan {casino} — the player crossed a casino's ban threshold (rare); arg = the casino.
+SetEventHandler "ITR:OnCasinoBan" (begin function {ref rFnvCasino}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvCasino
+    RunBatchScript "FNVLink/evt_casino_ban.txt"
+end)
+
+; ShowOff:OnDisplayObjective / OnCompleteObjective {quest, objNum} — a quest objective was shown /
+; completed. Stash the quest (ref) + the objective number (int); the batch names the quest and
+; resolves the objective TEXT via GetObjectiveText. No-op if ShowOff absent.
+SetEventHandler "ShowOff:OnDisplayObjective" (begin function {ref rFnvObjQuest, int iFnvObjIdx}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvObjQuest
+    Player.AuxVarSetFlt "FNVLink_evnum" iFnvObjIdx
+    RunBatchScript "FNVLink/evt_objective_shown.txt"
+end)
+
+SetEventHandler "ShowOff:OnCompleteObjective" (begin function {ref rFnvObjQuest2, int iFnvObjIdx2}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvObjQuest2
+    Player.AuxVarSetFlt "FNVLink_evnum" iFnvObjIdx2
+    RunBatchScript "FNVLink/evt_objective_complete.txt"
+end)
+
+; OnNoteAdded {note} — a Note was added to the PLAYER (player-inherent, no filter). Sig: handler
+; THEN setORremove(1). Record the note's name/form.
+SetOnNoteAddedEventHandler (begin function {ref rFnvNote}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvNote
+    RunBatchScript "FNVLink/evt_note_added.txt"
+end) 1
+
+; OnCrippledLimb {limbInt} — an actor's limb was crippled; the 3rd arg PlayerRef filters to the
+; PLAYER. GetSelf = the player; arg = which limb (0 Head..6 Brain). Sig: handler setORremove(1)
+; actorOrList. The batch records the limb index.
+SetOnCrippledLimbEventHandler (begin function {int iFnvLimb}
+    Player.AuxVarSetFlt "FNVLink_evnum" iFnvLimb
+    RunBatchScript "FNVLink/evt_crippled_limb.txt"
+end) 1 PlayerRef
+
+; ShowOff:OnPCMiscStatChange {statCode, delta, newVal} — a vanilla PC misc stat changed (Speech
+; checks, hacking, lockpicking, crafting, weapon mods, addiction, gambling, etc.). GetSelf = the
+; player. We DROP the per-kill flood codes (2 People Killed, 3 Creatures Killed, 35 Total Things
+; Killed — already covered by death/murder and would fire per kill); everything else is recorded.
+; The relay maps stat_code -> a readable name. No-op if ShowOff absent.
+SetEventHandler "ShowOff:OnPCMiscStatChange" (begin function {int iFnvStatC, int iFnvStatD, int iFnvStatV}
+    if eval ((iFnvStatC != 2) && (iFnvStatC != 3) && (iFnvStatC != 35))
+        Player.AuxVarSetFlt "FNVLink_evstat" iFnvStatC
+        Player.AuxVarSetFlt "FNVLink_evdelta" iFnvStatD
+        Player.AuxVarSetFlt "FNVLink_evnum" iFnvStatV
+        RunBatchScript "FNVLink/evt_misc_stat.txt"
+    endif
+end)

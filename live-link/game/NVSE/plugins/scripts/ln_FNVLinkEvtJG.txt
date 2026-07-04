@@ -1,0 +1,62 @@
+; ln_FNVLinkEvtJG.txt
+; YesMan AI Live Link — quest event channel (JohnnyGuitar NVSE). SEPARATE ln_ script (independent
+; compile) ON PURPOSE: it uses the SetJohnnyOn*QuestEventHandler functions, which only exist
+; if JohnnyGuitar NVSE is installed. Isolating them here means that if JohnnyGuitar is absent
+; this single file fails to compile while ln_FNVLinkEvt.txt (the base/JIP events) keeps
+; working — graceful degradation instead of taking the whole event channel down.
+;
+; Pattern is identical to ln_FNVLinkEvt: each handler is a tiny lambda that stashes the quest
+; (the single handler arg) into the FNVLink_evactor aux ref, then runs the relay-materialised
+; evt_quest_*.txt batch (which records the quest's name + FormID). Kept tiny for GECK's
+; 512-char parenthesis limit.
+;
+; Signature (per geckwiki): SetJohnnyOn{Complete,Fail}QuestEventHandler setORremove handlerScript flag quest
+;   setORremove = 1 (set), flag = 0 (reserved, must be 0), quest filter OMITTED = ANY quest.
+; The handler receives a single arg: the quest that completed/failed.
+;
+; NOTE: a quest_START handler was REMOVED (2026-06-18) — unfiltered "any quest started" floods,
+; because framework/controller quests (e.g. MCM) stop-and-restart every frame: it fired 5680x
+; in one session, all from the MCM menu quest. Completion/failure are deliberate, rare
+; milestones that don't suffer this. "Current quest" awareness lives in the state snapshot
+; (quest / quest_stage / quest_objective), not an event.
+
+printc "FNVLink: registering quest event handlers (JohnnyGuitar)."
+
+; Quest COMPLETED.
+SetJohnnyOnCompleteQuestEventHandler 1 (begin function {ref rFnvQuestEv}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvQuestEv
+    RunBatchScript "FNVLink/evt_quest_complete.txt"
+end) 0
+
+; Quest FAILED.
+SetJohnnyOnFailQuestEventHandler 1 (begin function {ref rFnvQuestEv}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvQuestEv
+    RunBatchScript "FNVLink/evt_quest_fail.txt"
+end) 0
+
+; Perk GAINED. SetJohnnyOnAddPerkEventHandler signature mirrors the quest ones (setORremove,
+; handlerScript, flag, perk-filter OMITTED = any perk). The handler receives THREE args
+; {perk, oldRank, newRank} — we only need the perk form. NOTE: since JIP LN 56.24 this can
+; fire for companions too; we keep the lambda minimal (no actor guard) to match the proven
+; quest handlers — stray companion perks are vanishingly rare in normal play.
+SetJohnnyOnAddPerkEventHandler 1 (begin function {ref rFnvPerk, int iFnvOld, int iFnvNew}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvPerk
+    RunBatchScript "FNVLink/evt_perk.txt"
+end) 0
+
+; Challenge COMPLETED. SetJohnnyOnChallengeCompleteEventHandler signature: setORremove
+; handlerScript flag challenge-filter — flag = 0 (reserved); challenge filter OMITTED = ANY
+; challenge. Handler receives {ref rChallenge} = the completed Challenge (CHAL form). Runs after
+; the challenge's own script but just before it's flagged complete (fine — we only record it).
+SetJohnnyOnChallengeCompleteEventHandler 1 (begin function {ref rFnvChallenge}
+    Player.AuxVarSetRef "FNVLink_evactor" rFnvChallenge
+    RunBatchScript "FNVLink/evt_challenge_complete.txt"
+end) 0
+
+; Player SLEPT or WAITED. SetJohnnyOnSleepWaitEventHandler signature: setORremove handlerScript
+; flag filter — flag = 0 (reserved, must be 0); filter = 0 (both rest & wait), 1 (wait only),
+; 2 (rest only). The handler receives {int iMode}. Subject-less for us: we just record that a
+; sleep/wait happened (the time skip is observable in the next state snapshot's gamehour).
+SetJohnnyOnSleepWaitEventHandler 1 (begin function {int iFnvSleepMode}
+    RunBatchScript "FNVLink/evt_sleep_wait.txt"
+end) 0 0

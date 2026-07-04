@@ -1,0 +1,138 @@
+; ln_FNVLinkChat.txt
+; YesMan AI Live Link — two-way text chat (player <-> Claude). SEPARATE ln_ script so the Script
+; Runner compiles it independently: a compile error here can't take down the heartbeat,
+; command, or event scripts. Part of YesMan AI live link (MIT, see NOTICE).
+;
+; PLAYER -> CLAUDE: pressing the chat hotkey (DirectInput scancode 43 = Backslash, edit the
+; SetOnKeyDownEventHandler line below to rebind) opens JIP's TextEditMenu via ShowTextInputMenu.
+; When the player presses Enter/OK the callback UDF receives the typed text as a string_var and
+; APPENDS it to FNVLink/chat.json (a JSON array of {seq,text,gamehour}). The relay's
+; fnv_poll_chat tool drains that file.
+;
+; CLAUDE -> PLAYER: the relay's fnv_chat_reply tool re-opens the SAME text box, appends Claude's
+; line to the persistent display log (FNVLink/chatlog.json), and renders the whole conversation
+; into the box's scrollable read-only log area. The input field stays empty, so the player reads
+; the reply and types the next line in one window — a true back-and-forth. That works because the
+; callback UDF's ref is stashed in an aux var (FNVLink_chatcb) so the relay's exec batch can call
+; ShowTextInputMenu with it. There is NO console / command-parser involved in either direction, so
+; free-form prose survives intact (the reason the console approach was rejected).
+;
+; THE SCROLLABLE LOG (v2): both the '\' open and fnv_chat_reply render FNVLink/chatlog.json (a
+; persistent JSON array of {role,text}, never drained, surviving reloads) into the injected
+; FNVLink_LogBox via RunBatchScript "FNVLink/chatlog_render.txt". The player's line is mirrored
+; into chatlog.json by chat_recv.txt (run from the callback below); Claude's line is appended by
+; the fnv_chat_reply exec batch — so the GAME is the sole writer of chatlog.json (no race).
+;
+; WHY THE FEED APPEND IS INLINE BUT THE LOG APPEND IS A BATCH: the chat.json append fits GECK's
+; 512-char parenthesised-expression limit inside the callback lambda; adding the chatlog.json
+; append too would exceed it, so the callback delegates that to chat_recv.txt via RunBatchScript
+; (which also reads the typed text straight from chat.json — no AuxVarSetStr hand-off, since that
+; can't store a string_var's content inside a batch; gotcha 134).
+
+if GetNVSEVersionFull < 6.21
+    return
+endif
+if GetPluginVersion "JIP LN NVSE" < 57
+    printc "FNVLink: chat requires JIP LN NVSE 57+ (have %g) - disabled" (GetPluginVersion "JIP LN NVSE")
+    return
+endif
+
+printc "FNVLink: chat channel starting (hotkey scancode 43 = Backslash)."
+
+; --- callback UDF: invoked with the typed text when the player presses Enter/OK ---
+; Appends {seq,text,gamehour} to FNVLink/chat.json (the fnv_poll_chat feed), then RunBatchScripts
+; chat_recv.txt to mirror the same line into the persistent display log chatlog.json. The relay
+; seeds both files to "[]" so ReadFromJSON always returns a valid array. Body stays under GECK's
+; 512-char paren limit (the chatlog append is offloaded to the batch precisely to keep it small).
+ref rFnvChatCB = (begin function {string_var sFnvChatTxt}
+    array_var aFnvCh = (ReadFromJSON "FNVLink/chat.json" "" 0)
+    array_var aFnvC = Ar_Construct "stringmap"
+    aFnvC["seq"] = ((Ar_Size aFnvCh) + 1)
+    aFnvC["text"] = (sFnvChatTxt)
+    aFnvC["gamehour"] = (GameHour)
+    Ar_Append aFnvCh, aFnvC
+    WriteToJSON aFnvCh ("FNVLink/chat.json") "" 0 0 1
+    RunBatchScript "FNVLink/chat_recv.txt"
+    sv_Destruct sFnvChatTxt
+end)
+
+; Stash the callback ref so the relay's fnv_chat_reply exec batch can re-open the box with it.
+Player.AuxVarSetRef "FNVLink_chatcb" rFnvChatCB
+
+; --- hotkey handler: opens the chat box via the shared reopen batch (chat_reopen.txt =
+; ShowTextInputMenu + inject + reposition + render + Enter-submits). Keeping the open logic in the
+; batch means the '\' open and the post-send reopen (below) are byte-identical. ShowTextInputMenu
+; from a batch is proven (it is how fnv_chat_reply opens the box). ---
+ref rFnvChatKey = (begin function {int iFnvKey}
+    RunBatchScript "FNVLink/chat_reopen.txt"
+end)
+
+; SetOnKeyDownEventHandler handler setORremove:1 keyID:43 (DIK_BACKSLASH '\'). Rebind by
+; changing the trailing 43 to another DirectInput scancode.
+SetOnKeyDownEventHandler rFnvChatKey 1 43
+
+; --- KEEP-OPEN-AFTER-SEND: the native OK/Enter always CLOSES the TextEditMenu (Accept), so to keep
+; the chat window open after a real send we REOPEN it once the close has fully settled. chat_recv.txt
+; sets the aux COUNTDOWN FNVLink_reopen=3 on a non-blank send (NOT on the Close button's blank, so
+; Close still closes). This main-loop callback runs in GAME MODE ONLY (modeFlag 1) so it never fires
+; while the chat menu is open (no interference) and only ticks once the menu has actually closed; it
+; decrements the countdown each GameMode frame and reopens on reaching 0 — giving the close 3 frames
+; to settle. CRITICAL: reopening DURING the close (the earlier modeFlag-3 version) produced a ghost
+; box (game unpaused, non-interactive) + spurious blank submits; deferring to a clean GameMode frame
+; fixes it. The reopen batch does ShowTextInputMenu, proven from a batch (same as fnv_chat_reply). ---
+SetGameMainLoopCallback (begin function {}
+    int iFnvRe
+    set iFnvRe to (Player.AuxVarGetFlt "FNVLink_reopen")
+    if eval (iFnvRe > 0)
+        set iFnvRe to (iFnvRe - 1)
+        Player.AuxVarSetFlt "FNVLink_reopen" iFnvRe
+        if eval (iFnvRe == 0)
+            RunBatchScript "FNVLink/chat_reopen.txt"
+        endif
+    endif
+end) 1 1 1
+
+; --- custom UI buttons (injected into the box by chat_inject.xml, materialised in the bridge
+; dir by the relay) ---
+; The box now carries two extra buttons along the bottom row, left of the native OK:
+;   Close  -> dismiss the box WITHOUT sending (replaces the clumsy space-then-Enter)
+;   Clear  -> wipe the input field (e.g. to clear Claude's reply before typing your own)
+; Both are wired by TILE PATH via SetOnMenuClickEventHandler (JIP). The handlers are registered
+; once here (by path — the tiles need not exist yet; the handler fires whenever a matching tile
+; is clicked). Handler args are {menuID, tileID, tileName}; we destruct the passed string_var.
+; NOTE: CloseActiveMenu is fixed in JIP PP LN 57.51+ (bugged in plain JIP LN 57.30); the
+; SetOnMenuClickEventHandler unload-crash is fixed in JohnnyGuitar 5.24+ — both satisfied here.
+; Close = clear the field to a space, then SIMULATE a click on the native OK button. We do
+; NOT use CloseActiveMenu: it force-destroys the TextEditMenu mid-event and leaves the menu
+; system unable to recreate it (ShowTextInputMenu then returns 0 — the box goes dead until a
+; full game restart, confirmed live). The OK path is the engine's own close and reopens cleanly
+; every time. The callback fires with " ", which the relay's drain_chat .strip()s and DROPS, so
+; Close dismisses the box WITHOUT sending a message.
+ref rFnvChatCloseH = (begin function {int iFnvMID, int iFnvTID, string_var sFnvTN}
+    SetTextInputString " "
+    ClickMenuButton "TextEditMenu#1" 1
+    sv_Destruct sFnvTN
+end)
+SetOnMenuClickEventHandler rFnvChatCloseH 1 "TextEditMenu/NOGLOW_BRANCH/FNVLink_ChatExtra/FNVLink_CloseBtn"
+
+ref rFnvChatClearH = (begin function {int iFnvMID, int iFnvTID, string_var sFnvTN}
+    ; SetTextInputString takes a formattedString, which CANNOT be the empty literal "" (the
+    ; compiler reports "Missing parameter"). Clear with a single space instead — the relay's
+    ; drain_chat .strip()s leading/trailing whitespace, so a stray space never reaches Claude.
+    SetTextInputString " "
+    sv_Destruct sFnvTN
+end)
+SetOnMenuClickEventHandler rFnvChatClearH 1 "TextEditMenu/NOGLOW_BRANCH/FNVLink_ChatExtra/FNVLink_ClearBtn"
+
+; Clear Log -> wipe the PERSISTENT conversation log (chatlog.json), then re-render the box's log
+; area (now empty -> shows the "no messages yet" placeholder). Distinct from Clear, which only wipes
+; the input FIELD. The handler is a compiled lambda, so it can call the JSON funcs directly (write an
+; empty array) — well under the 512-char paren limit. chatlog.json is the display log only; the
+; fnv_poll_chat feed (chat.json) is separate and untouched.
+ref rFnvChatClearLogH = (begin function {int iFnvMID, int iFnvTID, string_var sFnvTN}
+    array_var aFnvEmpty = Ar_Construct "array"
+    WriteToJSON aFnvEmpty ("FNVLink/chatlog.json") "" 0 0 1
+    RunBatchScript "FNVLink/chatlog_render.txt"
+    sv_Destruct sFnvTN
+end)
+SetOnMenuClickEventHandler rFnvChatClearLogH 1 "TextEditMenu/NOGLOW_BRANCH/FNVLink_ChatExtra/FNVLink_ClearLogBtn"

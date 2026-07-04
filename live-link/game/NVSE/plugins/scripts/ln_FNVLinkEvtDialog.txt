@@ -1,0 +1,43 @@
+; ln_FNVLinkEvtDialog.txt
+; YesMan AI Live Link — NPC dialogue channel (POLLING). Isolated ln_ (independent compile). Part of the
+; YesMan AI live link (MIT, see NOTICE).
+;
+; Pushes a "dialogue" event whenever an NPC says a line TO the player in a conversation, so Claude
+; can observe what NPCs say.
+;
+; *** WHY POLLING, NOT THE JG DIALOGUE EVENTS ***: JohnnyGuitar's SetOnNPCResponseEventHandler and
+; SetOnGeneralSubtitleEventHandler compile + register fine but NEVER FIRE in MTUI / heavily-modded-UI
+; load orders — the vanilla dialogue/subtitle engine functions they detour are bypassed by the UI
+; overhaul's own subtitle rendering. Verified live: subtitles render on screen, JG perk events fire,
+; yet neither JG dialogue hook dispatches. It is NOT a togglable plugin conflict (lStewieAl ruled out
+; by disabling it). So instead of an event hook we POLL the on-screen subtitle text directly from the
+; DialogMenu UI tiles, which is immune to the hook bypass (if the player can read the line, we can).
+;
+; Mechanism: a main-loop callback runs the relay-materialised dialogue_poll.txt every ~0.5s. That
+; batch only acts while the DialogMenu is open (GetActiveMenuMode 1009), reads the spoken line +
+; speaker from the DialogMenu's DM_SpeakerText / DM_SpeakerNameLabel tiles via GetUIString, dedupes
+; against the last line (dlg_last.json — the subtitle persists in the tile for several ticks while
+; shown), and appends a {type:"dialogue", name, text} event. These are the VANILLA tile names
+; (verified from Fallout - Misc.bsa), so it works on vanilla + overhauls that keep them (MTUI/VUI+/
+; etc.); the batch tries a candidate-path CHAIN so a UI that renames the tiles can be added with one
+; line. See bridge.py DIALOGUE_POLL_SCRIPT for the batch.
+;
+; REQUIREMENT: the player must have dialogue SUBTITLES enabled in-game (Settings > Display) — the
+; capture reads the subtitle the engine draws; with subtitles off there is no on-screen text to read.
+;
+; This channel depends only on JIP (SetGameMainLoopCallback / GetUIString / GetActiveMenuMode) + the
+; batch funcs — NOT on JohnnyGuitar. The logic lives in the batch (RunBatchScript has no 512-char
+; limit and re-reads live each tick); the callback lambda stays trivial. A changed ln_ needs a full
+; game restart (ln_ compiles at startup); the batch (dialogue_poll.txt) can be iterated restart-free.
+
+if GetPluginVersion "JIP LN NVSE" < 57
+    return
+endif
+
+printc "FNVLink: starting NPC dialogue capture (subtitle polling)."
+
+; SetGameMainLoopCallback callback setORremove:1 callDelay:frames(30 ~= 0.5s) modeFlag:3(GameMode+MenuMode)
+; modeFlag 3 so it keeps ticking inside the DialogMenu (a menu mode); the batch self-gates to 1009.
+SetGameMainLoopCallback (begin function {}
+    RunBatchScript "FNVLink/dialogue_poll.txt"
+end) 1 30 3

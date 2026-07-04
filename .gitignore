@@ -1,0 +1,34 @@
+# Claude workspace transient files
+.claude/backups/
+.claude/settings.local.json
+.claude/plans/
+
+# Node
+node_modules/
+package-lock.json
+
+# External modding tools installed locally (not shipped) — but DO ship our AutoMod CLI
+tools/*
+!tools/automod/
+!tools/automod-cli.sh
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Tool-generated logs
+xelib_log.txt
+*.log
+
+# Build artifacts
+*.zip
+/dist/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Dev-only planning docs (not part of the released product / public repo)
+BUILD_PLAN.md
+PORT_PLAN.md

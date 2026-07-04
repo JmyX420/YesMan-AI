@@ -1,0 +1,215 @@
+; ln_FNVLinkEvtAid.txt
+; YesMan AI Live Link — aid-item-used event (JIP). ISOLATED in its own ln_ script ON PURPOSE so a
+; compile/registration hiccup here can't take down the confident base events in ln_FNVLinkEvt.txt.
+;
+; COVERAGE: SetOnUseAidItemEventHandler REQUIRES an item/FormList filter — there is NO "any
+; ingestible" form, and OMITTING the filter is a compile error ("Missing parameter", verified
+; in jip_ln_nvse.log). So we register ONE shared handler (a stored lambda) across EVERY ALCH
+; (ingestible) defined by FalloutNV.esm — 189 items: meds, chems, food, drink, alcohol, poisons,
+; plus ALCH-typed specials (Stealth Boy, Weapon Repair Kit, NCR Emergency Radio, skill
+; MAGAZINES). Items are referenced by EditorID (load-order-independent; FalloutNV.esm is always
+; loaded). DLC / mod-added aid can be appended later the same way. NOTE: skill BOOKS are the
+; BOOK type (not ALCH) and do NOT fire this event.
+;
+; The handler fires for ANY actor that uses an aid item, so it is guarded to the player via
+; GetSelf == Player (request: player-only).
+; Signature: SetOnUseAidItemEventHandler handlerScript setORremove itemOrList
+
+ref rAidH = (begin function {ref rFnvAid}
+    if eval (GetSelf == Player)
+        Player.AuxVarSetRef "FNVLink_evactor" rFnvAid
+        RunBatchScript "FNVLink/evt_aid_use.txt"
+    endif
+end)
+
+printc "FNVLink: registering aid_use handler (189 vanilla ingestibles)."
+
+SetOnUseAidItemEventHandler rAidH 1 CookCooksFiendStew
+SetOnUseAidItemEventHandler rAidH 1 BighornerSteak
+SetOnUseAidItemEventHandler rAidH 1 BigHornerMeat
+SetOnUseAidItemEventHandler rAidH 1 Tremble
+SetOnUseAidItemEventHandler rAidH 1 MotherDarkness
+SetOnUseAidItemEventHandler rAidH 1 SilverSting
+SetOnUseAidItemEventHandler rAidH 1 ScotchGood
+SetOnUseAidItemEventHandler rAidH 1 NVVEFR01NCRGood2Radio
+SetOnUseAidItemEventHandler rAidH 1 NVBrahminWellington
+SetOnUseAidItemEventHandler rAidH 1 Moonshine
+SetOnUseAidItemEventHandler rAidH 1 BleakVenom
+SetOnUseAidItemEventHandler rAidH 1 GeckoKebab
+SetOnUseAidItemEventHandler rAidH 1 MoleRatStew
+SetOnUseAidItemEventHandler rAidH 1 FireAntFricassee
+SetOnUseAidItemEventHandler rAidH 1 DogSteak
+SetOnUseAidItemEventHandler rAidH 1 CoyoteSteak
+SetOnUseAidItemEventHandler rAidH 1 BloatflySlider
+SetOnUseAidItemEventHandler rAidH 1 BrahminMeat
+SetOnUseAidItemEventHandler rAidH 1 NVBitterDrink
+SetOnUseAidItemEventHandler rAidH 1 BuffaloGourdSeed
+SetOnUseAidItemEventHandler rAidH 1 PintoBeanPod
+SetOnUseAidItemEventHandler rAidH 1 JalapenoPepper
+SetOnUseAidItemEventHandler rAidH 1 NVCannibalFood
+SetOnUseAidItemEventHandler rAidH 1 CazadorEgg
+SetOnUseAidItemEventHandler rAidH 1 AntEgg
+SetOnUseAidItemEventHandler rAidH 1 FireAntEgg
+SetOnUseAidItemEventHandler rAidH 1 DesertSalad
+SetOnUseAidItemEventHandler rAidH 1 MushroomCloud
+SetOnUseAidItemEventHandler rAidH 1 FireAntMeat
+SetOnUseAidItemEventHandler rAidH 1 NightstalkerTail
+SetOnUseAidItemEventHandler rAidH 1 NVPoisonGreaseScorpionDummy
+SetOnUseAidItemEventHandler rAidH 1 testfx
+SetOnUseAidItemEventHandler rAidH 1 CoyoteMeat
+SetOnUseAidItemEventHandler rAidH 1 GiantRatMeat
+SetOnUseAidItemEventHandler rAidH 1 NVHealingPowderLegate
+SetOnUseAidItemEventHandler rAidH 1 Rocket
+SetOnUseAidItemEventHandler rAidH 1 PartyTimeMentats
+SetOnUseAidItemEventHandler rAidH 1 Slasher
+SetOnUseAidItemEventHandler rAidH 1 LakeLurkEgg
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedPotato
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedWaterUnpurified
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedSugarBombs01
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedScotch
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedSalisburySteak
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedPotatoCrisps
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedPorkNBeans
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedSSBottleFull
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedFancyLadsSnackCakes
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedDandyBoyApples
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedCram
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedInstaMash
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedBlamcoMacandCheese
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedNVFreshBarrelCactusFruit
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedNVFreshBananaYuccaFruit
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedMutfruit2
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedMutfruit1
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedWhiskey
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedNVGeckoMeat
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedYumYumDeviledEggs
+SetOnUseAidItemEventHandler rAidH 1 IrradiatedBeer
+SetOnUseAidItemEventHandler rAidH 1 NVRepairKit
+SetOnUseAidItemEventHandler rAidH 1 NVPoisonGreaseScorpion
+SetOnUseAidItemEventHandler rAidH 1 TrailMix
+SetOnUseAidItemEventHandler rAidH 1 CaravanLunch
+SetOnUseAidItemEventHandler rAidH 1 NVHydra
+SetOnUseAidItemEventHandler rAidH 1 BrocFlower
+SetOnUseAidItemEventHandler rAidH 1 XanderRoot
+SetOnUseAidItemEventHandler rAidH 1 WhiteHorsenettleBerry
+SetOnUseAidItemEventHandler rAidH 1 LakelurkMeat
+SetOnUseAidItemEventHandler rAidH 1 NVHealingPowder
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVCritical
+SetOnUseAidItemEventHandler rAidH 1 NVCCBunkerRadroachMeat
+SetOnUseAidItemEventHandler rAidH 1 RatMeat
+SetOnUseAidItemEventHandler rAidH 1 WhiskeyDixon
+SetOnUseAidItemEventHandler rAidH 1 JetDixon
+SetOnUseAidItemEventHandler rAidH 1 NVTurbo
+SetOnUseAidItemEventHandler rAidH 1 NVGeckoMeat
+SetOnUseAidItemEventHandler rAidH 1 VMS18StrangeMeatPie
+SetOnUseAidItemEventHandler rAidH 1 VMS18DruggedWine
+SetOnUseAidItemEventHandler rAidH 1 RumNukaCola
+SetOnUseAidItemEventHandler rAidH 1 Absinthe
+SetOnUseAidItemEventHandler rAidH 1 SSBottleFull
+SetOnUseAidItemEventHandler rAidH 1 NVContrerasMedicalSupplies
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVScience
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVUnarmed
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVSurvival
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVSpeech
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVSneak
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVGuns
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVRepair
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVMeleeWeapons
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVMedicine
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVLockpick
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVExplosives
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVEnergyWeapons
+SetOnUseAidItemEventHandler rAidH 1 MagazineNVBarter
+SetOnUseAidItemEventHandler rAidH 1 PricklyPearCactusFruit
+SetOnUseAidItemEventHandler rAidH 1 NVFreshBarrelCactusFruit
+SetOnUseAidItemEventHandler rAidH 1 NevadaAgaveFruit
+SetOnUseAidItemEventHandler rAidH 1 NVFreshBananaYuccaFruit
+SetOnUseAidItemEventHandler rAidH 1 NVCoyoteTobaccoFruit
+SetOnUseAidItemEventHandler rAidH 1 NVFreshHoneyMesquiteFruit
+SetOnUseAidItemEventHandler rAidH 1 NVFreshMaize
+SetOnUseAidItemEventHandler rAidH 1 PrimmSpicyCasserole
+SetOnUseAidItemEventHandler rAidH 1 NVNukaColaQuartz
+SetOnUseAidItemEventHandler rAidH 1 NVNukaColaVictory
+SetOnUseAidItemEventHandler rAidH 1 NVAtomicCocktail
+SetOnUseAidItemEventHandler rAidH 1 NVSporePlantPods
+SetOnUseAidItemEventHandler rAidH 1 WastelandOmeletNV
+SetOnUseAidItemEventHandler rAidH 1 NVPinyonNuts
+SetOnUseAidItemEventHandler rAidH 1 NVGeckoSteak
+SetOnUseAidItemEventHandler rAidH 1 NVGrilledMantis
+SetOnUseAidItemEventHandler rAidH 1 NVAntivenom
+SetOnUseAidItemEventHandler rAidH 1 NVSteadyChem
+SetOnUseAidItemEventHandler rAidH 1 NVReboundChem
+SetOnUseAidItemEventHandler rAidH 1 NVSuperStimpak
+SetOnUseAidItemEventHandler rAidH 1 NVFixer
+SetOnUseAidItemEventHandler rAidH 1 NVDoctorBag
+SetOnUseAidItemEventHandler rAidH 1 NVCateye
+SetOnUseAidItemEventHandler rAidH 1 BloatflyMeat
+SetOnUseAidItemEventHandler rAidH 1 MirelurkMeatHatchling
+SetOnUseAidItemEventHandler rAidH 1 MirelurkMeatSoftshell
+SetOnUseAidItemEventHandler rAidH 1 MS09Ultrajet
+SetOnUseAidItemEventHandler rAidH 1 MS15Mentat03
+SetOnUseAidItemEventHandler rAidH 1 MS15Mentat02
+SetOnUseAidItemEventHandler rAidH 1 MS15Mentat01
+SetOnUseAidItemEventHandler rAidH 1 MoleRatWonderMeat
+SetOnUseAidItemEventHandler rAidH 1 RadroachMeat
+SetOnUseAidItemEventHandler rAidH 1 MS05NukalurkMeat
+SetOnUseAidItemEventHandler rAidH 1 MS04FireAntNectar
+SetOnUseAidItemEventHandler rAidH 1 RadioactiveGumDrops
+SetOnUseAidItemEventHandler rAidH 1 PotatoCrisps
+SetOnUseAidItemEventHandler rAidH 1 Bubblegum
+SetOnUseAidItemEventHandler rAidH 1 PorkNBeans
+SetOnUseAidItemEventHandler rAidH 1 YumYumDeviledEggs
+SetOnUseAidItemEventHandler rAidH 1 FancyLadsSnackCakes
+SetOnUseAidItemEventHandler rAidH 1 InstaMash
+SetOnUseAidItemEventHandler rAidH 1 BlamcoMacandCheese
+SetOnUseAidItemEventHandler rAidH 1 DandyBoyApples
+SetOnUseAidItemEventHandler rAidH 1 Cram
+SetOnUseAidItemEventHandler rAidH 1 SugarBombs01
+SetOnUseAidItemEventHandler rAidH 1 StrangeMeatPie
+SetOnUseAidItemEventHandler rAidH 1 Morphine
+SetOnUseAidItemEventHandler rAidH 1 MS05FinNukaPie
+SetOnUseAidItemEventHandler rAidH 1 StealthBoy
+SetOnUseAidItemEventHandler rAidH 1 MS05IceNukaCola
+SetOnUseAidItemEventHandler rAidH 1 AntMeat
+SetOnUseAidItemEventHandler rAidH 1 CaveFungus
+SetOnUseAidItemEventHandler rAidH 1 BloodPack
+SetOnUseAidItemEventHandler rAidH 1 DogMeat
+SetOnUseAidItemEventHandler rAidH 1 HumanFlesh
+SetOnUseAidItemEventHandler rAidH 1 MirelurkMeat
+SetOnUseAidItemEventHandler rAidH 1 MoleRatMeat
+SetOnUseAidItemEventHandler rAidH 1 YaoGuaiMeat
+SetOnUseAidItemEventHandler rAidH 1 Wine
+SetOnUseAidItemEventHandler rAidH 1 Mutfruit2
+SetOnUseAidItemEventHandler rAidH 1 JunkFood
+SetOnUseAidItemEventHandler rAidH 1 AntQueenPheromones
+SetOnUseAidItemEventHandler rAidH 1 Whiskey
+SetOnUseAidItemEventHandler rAidH 1 Vodka
+SetOnUseAidItemEventHandler rAidH 1 SquirrelStew
+SetOnUseAidItemEventHandler rAidH 1 SquirrelOnAStick
+SetOnUseAidItemEventHandler rAidH 1 SquirrelBits
+SetOnUseAidItemEventHandler rAidH 1 AntNectar
+SetOnUseAidItemEventHandler rAidH 1 CG02Sweetroll
+SetOnUseAidItemEventHandler rAidH 1 StrangeMeat
+SetOnUseAidItemEventHandler rAidH 1 MS05NukaColaQtm
+SetOnUseAidItemEventHandler rAidH 1 SalisburySteak
+SetOnUseAidItemEventHandler rAidH 1 WaterUnpurified
+SetOnUseAidItemEventHandler rAidH 1 WaterPurified
+SetOnUseAidItemEventHandler rAidH 1 Scotch
+SetOnUseAidItemEventHandler rAidH 1 Potato
+SetOnUseAidItemEventHandler rAidH 1 Pear
+SetOnUseAidItemEventHandler rAidH 1 NukaCola
+SetOnUseAidItemEventHandler rAidH 1 Noodles
+SetOnUseAidItemEventHandler rAidH 1 Mutfruit1
+SetOnUseAidItemEventHandler rAidH 1 IguanaOnAStick
+SetOnUseAidItemEventHandler rAidH 1 IguanaBits
+SetOnUseAidItemEventHandler rAidH 1 Carrot
+SetOnUseAidItemEventHandler rAidH 1 BrahminSteak
+SetOnUseAidItemEventHandler rAidH 1 Beer
+SetOnUseAidItemEventHandler rAidH 1 Apple
+SetOnUseAidItemEventHandler rAidH 1 Stimpak
+SetOnUseAidItemEventHandler rAidH 1 RadX
+SetOnUseAidItemEventHandler rAidH 1 RadAway
+SetOnUseAidItemEventHandler rAidH 1 Psycho
+SetOnUseAidItemEventHandler rAidH 1 Mentats
+SetOnUseAidItemEventHandler rAidH 1 Jet
+SetOnUseAidItemEventHandler rAidH 1 Buffout

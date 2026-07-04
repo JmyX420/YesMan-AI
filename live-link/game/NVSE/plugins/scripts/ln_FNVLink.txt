@@ -1,0 +1,35 @@
+; ln_FNVLink.txt
+; YesMan AI Live Link — heartbeat (enriched state snapshot). Part of YesMan AI
+; live link (MIT, see NOTICE). Re-architecture of the SkyLink AI concept by Jarvann.
+;
+; Runs every game-load via JIP LN's Script Runner ("ln_" prefix). A JIP main-loop callback
+; fires ~every 0.75s (45 frames) and runs the relay-materialised state_write.txt batch, which
+; serializes the full player/world snapshot to FNVLink/state.json. The relay reads that file's
+; mtime as the heartbeat and its contents as fnv_get_player_state.
+;
+; WHY THE LOGIC IS IN A BATCH, NOT HERE: the enriched snapshot (pos, health, gamehour, cell,
+; caps, level, equipped weapon name+FormID) is well over GECK's 512-char limit for an
+; expression inside parentheses — and the whole callback lambda lives inside
+; SetGameMainLoopCallback(...). An oversized lambda SILENTLY fails to compile (the Phase-4
+; trap). So the callback stays trivial and delegates to state_write.txt (RunBatchScript has no
+; such limit, caches its compile, and re-reads live state each tick). See bridge.py STATE_SCRIPT.
+
+if GetNVSEVersionFull < 6.21
+    printc "FNVLink: requires xNVSE 6.21+ (have %g) - aborting" (GetNVSEVersionFull)
+    return
+endif
+if GetPluginVersion "JIP LN NVSE" < 57
+    printc "FNVLink: requires JIP LN NVSE 57+ (have %g) - aborting" (GetPluginVersion "JIP LN NVSE")
+    return
+endif
+
+printc "FNVLink: heartbeat starting (enriched snapshot via state_write.txt)."
+; on-screen confirmation each load (printc only goes to the console log, which heavily-modded setups flood)
+MessageEx "YesMan AI Live Link active."
+
+Player.AuxVarSetFlt "FNVLink_tick" 0
+
+; SetGameMainLoopCallback callback setORremove:1 callDelay:frames(45) modeFlag:3(GameMode+MenuMode)
+SetGameMainLoopCallback (begin function {}
+    RunBatchScript "FNVLink/state_write.txt"
+end) 1 45 3
