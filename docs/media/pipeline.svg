@@ -1,0 +1,70 @@
+<svg width="1020" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+<title>YesMan AI communication pipeline</title>
+<desc>You talk to an AI coding agent (Claude Code or Codex) in natural language. All of the agent's edit actions pass through safety hooks. From there the agent works through three channels: the AutoMod CLI driving xEditLib and external tools for offline plugin work; the MO2 MCP for live load-order and conflict data when Mod Organizer 2 is open; and the Live Link MCP through a Python relay and esp-less NVSE scripts to observe and command the running game. All three converge on your modded Fallout: New Vegas install.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+<rect x="0" y="0" width="680" height="484" fill="#FBFAF7"/>
+
+<rect x="250" y="40" width="180" height="44" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="340" y="67" text-anchor="middle" font-size="14" font-weight="500" fill="#26215C">You — the modder</text>
+
+<line x1="340" y1="84" x2="340" y2="110" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+<rect x="190" y="110" width="300" height="46" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="340" y="130" text-anchor="middle" font-size="14" font-weight="500" fill="#26215C">AI coding agent</text>
+<text x="340" y="147" text-anchor="middle" font-size="12" font-weight="400" fill="#3C3489">Claude Code · Codex · reads, thinks, acts</text>
+
+<line x1="340" y1="156" x2="340" y2="182" stroke="#6b6a66" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="40" y="182" width="600" height="30" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="340" y="201" text-anchor="middle" font-size="12" font-weight="400" fill="#2C2C2A">Safety hooks — confirm before edits · block direct ESP / BSA writes · auto-backup + audit</text>
+
+<line x1="130" y1="212" x2="130" y2="232" stroke="#6b6a66" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="340" y1="212" x2="340" y2="232" stroke="#6b6a66" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="550" y1="212" x2="550" y2="232" stroke="#6b6a66" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="40" y="232" width="180" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+<text x="130" y="252" text-anchor="middle" font-size="14" font-weight="500" fill="#042C53">AutoMod CLI</text>
+<text x="130" y="269" text-anchor="middle" font-size="12" font-weight="400" fill="#0C447C">JSON · dry-run first</text>
+
+<rect x="250" y="232" width="180" height="48" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="340" y="252" text-anchor="middle" font-size="14" font-weight="500" fill="#04342C">MO2 MCP</text>
+<text x="340" y="269" text-anchor="middle" font-size="12" font-weight="400" fill="#085041">when MO2 is open</text>
+
+<rect x="460" y="232" width="180" height="48" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+<text x="550" y="252" text-anchor="middle" font-size="14" font-weight="500" fill="#412402">Live Link MCP</text>
+<text x="550" y="269" text-anchor="middle" font-size="12" font-weight="400" fill="#633806">when game runs</text>
+
+<line x1="130" y1="280" x2="130" y2="310" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line x1="340" y1="280" x2="340" y2="310" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line x1="550" y1="280" x2="550" y2="310" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+<rect x="40" y="310" width="180" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+<text x="130" y="330" text-anchor="middle" font-size="14" font-weight="500" fill="#042C53">xEditLib + tools</text>
+<text x="130" y="347" text-anchor="middle" font-size="12" font-weight="400" fill="#0C447C">ESP/ESM · BSA · NIF</text>
+
+<rect x="250" y="310" width="180" height="48" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="340" y="330" text-anchor="middle" font-size="14" font-weight="500" fill="#04342C">MO2 VFS</text>
+<text x="340" y="347" text-anchor="middle" font-size="12" font-weight="400" fill="#085041">mods overlay Data/</text>
+
+<rect x="460" y="310" width="180" height="48" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+<text x="550" y="330" text-anchor="middle" font-size="14" font-weight="500" fill="#412402">Relay + NVSE scripts</text>
+<text x="550" y="347" text-anchor="middle" font-size="12" font-weight="400" fill="#633806">esp-less · JIP PP LN</text>
+
+<line x1="130" y1="358" x2="130" y2="388" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line x1="340" y1="358" x2="340" y2="388" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line x1="550" y1="358" x2="550" y2="388" stroke="#6b6a66" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+<rect x="40" y="388" width="600" height="46" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="340" y="408" text-anchor="middle" font-size="14" font-weight="500" fill="#2C2C2A">Your modded Fallout: New Vegas</text>
+<text x="340" y="425" text-anchor="middle" font-size="12" font-weight="400" fill="#444441">plugins · load order · live game</text>
+
+<rect x="40" y="452" width="12" height="12" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="58" y="462" text-anchor="start" font-size="12" font-weight="400" fill="#444441">you &amp; agent</text>
+<rect x="180" y="452" width="12" height="12" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+<text x="198" y="462" text-anchor="start" font-size="12" font-weight="400" fill="#444441">offline core</text>
+<rect x="330" y="452" width="12" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="348" y="462" text-anchor="start" font-size="12" font-weight="400" fill="#444441">MO2 (live)</text>
+<rect x="480" y="452" width="12" height="12" rx="3" fill="#FAEEDA" stroke="#854F0B" stroke-width="1.5"/>
+<text x="498" y="462" text-anchor="start" font-size="12" font-weight="400" fill="#444441">Live Link (live)</text>
+</svg>
