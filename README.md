@@ -85,10 +85,6 @@ And with the **YesMan AI Live Link** active (the game running with a save loaded
 
 ---
 
-## How it differs from the Skyrim toolkit
-
-FNV is a **different engine**: NVSE (not SKSE), GECK script stored inside plugins (not Papyrus `.psc/.pex`), ESM/ESP only (no ESL), BSA only (no BA2), `.ogg`+`.lip` voice (not FUZ), `.fos` saves (not LZ4 `.ess`), and Mod Organizer 2's virtual file system. This toolbox was rebuilt for those realities and verified against a real install — see `docs/` and `KNOWLEDGEBASE.md`.
-
 ## Docs
 - `docs/getting-started.md` — first session walkthrough
 - `docs/automod-cli.md` — the AutoMod CLI reference (all 11 modules)
