@@ -68,9 +68,12 @@ link for a live/play-alongside session — you MUST set up BOTH halves. Never ju
    event/message. Idle play is silent (no token cost); it only emits on activity. **Cap the
    output** (e.g. ≤12 event lines/tick + an `(+N more)` summary) so a firefight can't trip the
    harness's too-many-events auto-stop.
-2. **An auto-responder** — a recurring **self-check** (e.g. a scheduled self-wakeup every ~5–15s)
-   where you READ that feed and ACT on anything new — reply to chat, react to events — **on your
-   own, without the user prompting you.** Keep it running until the user says to stop.
+2. **An auto-responder** — the piece that makes it *live*. In practice, run the watch loop as a
+   **background process that EXITS the moment there's new activity** — on exit the harness
+   re-invokes you, so you read the drained output, act in-game, and **re-arm** the watcher. This
+   beats a fixed self-wakeup timer (floored at ~60s in the harness); latency = the watcher's poll
+   interval (~4s). READ the feed and ACT on anything new — reply to chat, react — **on your own,
+   without the user prompting you**, and keep re-arming until the user says to stop.
 
 **⛔ NEVER arm only the passive monitor and then wait to be told to check the feed.** The user
 having to ask "did you get my message?" defeats the entire purpose of a live link. The monitor
@@ -84,6 +87,16 @@ Rules that matter:
   items.
 - **Session-scoped, no persistence.** It dies on an agent restart and can crash or be culled
   **silently, with no notification**. Re-arm it each session (the user says "arm the live feed").
+- **Wake on CHAT, not on every event.** Chat is what needs a real-time reply, so it must wake you.
+  Events fire constantly and some fire *spuriously* — notably **FNV re-announces perks (and a few
+  others) on every save-load** — so waking on events spam-wakes you and burns turns. Default: wake
+  on **chat only**; still *drain and log* events for context, and surface notable ones (kills,
+  discoveries, quest steps) when you next wake. If you deliberately wake on a curated "notable"
+  set, exclude the load-refire-prone types (perks) or skip events that arrive alongside a `load`.
+- **Heartbeat + re-arm cadence.** Also exit on a periodic idle heartbeat so you re-arm and confirm
+  the watcher hasn't died silently. Use a short heartbeat (a few minutes) during an active session
+  and a long one (~30 min) once the user steps away — chat still wakes you instantly regardless, so
+  the long heartbeat just avoids needless pings.
 - **Verify before you claim it's running.** Never assume — check the background task's status
   first (a silent death looks identical to a quiet game). If you can't confirm it's alive, say so
   and offer to re-arm rather than asserting it's up.
