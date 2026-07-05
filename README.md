@@ -1,6 +1,6 @@
 # YesMan AI - A FNV Modding Toolbox for Claude and Codex
 
-Turn your Fallout: New Vegas install into an AI-assisted modding workshop. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a modding expert that can read your plugins, write GECK scripts, build mods, debug crashes, and convert FO3 mods to TTW — with safety guardrails so it doesn't break your game.
+Turn your Fallout: New Vegas install into an AI-assisted modding workshop. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, and convert FO3 mods to TTW — with safety guardrails so it doesn't break your game.
 
 > **A complete, ready-to-run environment**, not a guide. Run one installer, pick your Mod Organizer 2 instance, and start building. Built from the ground up for Fallout: New Vegas' engine, and for **Mod Organizer 2** setups.
 
@@ -8,7 +8,7 @@ Turn your Fallout: New Vegas install into an AI-assisted modding workshop. [Clau
 
 ## What you get
 
-- **A 650+ line FNV knowledgebase** (`KNOWLEDGEBASE.md`), auto-loaded every session: GECK/NVSE scripting, the MO2 virtual file system, the stability stack, xEdit cleaning/merging/navmesh, audio (ogg/lip), NIF meshes, MCM, TTW porting, and the `.fos` save format. Every claim is confidence-tagged and sourced.
+- **A 650+ line FNV knowledgebase** (`KNOWLEDGEBASE.md`), auto-loaded every session: GECK/NVSE scripting, the MO2 virtual file system, the xNVSE stability stack, xEdit cleaning/merging/navmesh, audio (ogg/lip), NIF meshes, MCM, TTW porting, and the `.fos` save format. Every claim is confidence-tagged and sourced.
 - **Reads and edits your plugins directly** — inspect what an `.esp`/`.esm` actually changes, edit its records, and diff two plugins, all programmatically via **xEditLib** (`GM_FNV=0`) and validated against real game files.
 - **Writes GECK scripts _and_ native plugins** — from in-plugin GECK scripts (`SCPT`/`SCTX`, NVSE) all the way up to complete **xNVSE script-extender plugins**: with Visual Studio installed, the `build` module and `/nvse-plugin` skill scaffold the C++ and compile a working 32-bit `.dll` (validated in-game).
 - **An AutoMod CLI** (`tools/automod-cli.sh`) — one JSON-emitting command over **11 modules**: `esp` (records via xEditLib), `mcm` (config-menu JSON), `bsa` (BSArch), `audio` (oggenc2 → 24kHz mono), `nif` (read + same-length retexture), `lod` (FNVLODGen/xLODGen orchestration), `fomod` (installer XML), `crashlog` (crash-log parsing), `funcs` (NVSE function index), `ini` (read-only INI audit), `build` (drives your MSVC to compile a native NVSE plugin). Auto-detects external tools; `--dry-run` on every write.
