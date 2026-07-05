@@ -41,10 +41,26 @@ LicenseFile=..\LICENSE
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-; Copy the entire toolbox tree into the game folder, minus dev-only / transient files.
+; Shared base: the engine, docs, and the SHARED skills source (.claude\skills, which the
+; configurator also deploys to Codex's .agents\skills). Dev-only/transient files are excluded,
+; and so are the AGENT-SPECIFIC files -- those are installed by the per-agent entries below,
+; gated on the wizard's agent choice. So Claude-only omits codex\, and Codex-only omits
+; CLAUDE.md + the Claude-only .claude hooks/settings (while keeping the shared .claude\skills).
+; NOTE: no createallsubdirs here -- we intentionally let Inno create only directories that
+; actually receive files, so an excluded agent's folder (e.g. codex\ for a Claude-only install)
+; is not created as an empty dir. The per-agent entries below carry their own subdirs.
 Source: "..\*"; DestDir: "{app}"; \
-  Flags: recursesubdirs createallsubdirs ignoreversion; \
-  Excludes: "\node_modules\*,\.git\*,\dist\*,\.gitignore,\.gitattributes,\.claude\backups\*,\.claude\plans\*,\.claude\settings.local.json,\BUILD_PLAN.md,\mo2-mcp\PORT_PLAN.md,\live-link\PORT_PLAN.md,\installer\*.iss,*.zip,*.log,\xelib_log.txt,*.pyc"
+  Flags: recursesubdirs ignoreversion; \
+  Excludes: "\node_modules\*,\.git\*,\dist\*,\.gitignore,\.gitattributes,\.claude\backups\*,\.claude\plans\*,\.claude\settings.local.json,\.claude\settings.local.json.example,\.claude\settings.json,\.claude\hooks\*,\CLAUDE.md,\codex\*,\BUILD_PLAN.md,\mo2-mcp\PORT_PLAN.md,\live-link\PORT_PLAN.md,\installer\*.iss,*.zip,*.log,\xelib_log.txt,*.pyc"
+
+; Claude Code integration -- only when Claude (or Both) is chosen.
+Source: "..\CLAUDE.md"; DestDir: "{app}"; Flags: ignoreversion; Check: WantClaude
+Source: "..\.claude\hooks\*"; DestDir: "{app}\.claude\hooks"; Flags: recursesubdirs createallsubdirs ignoreversion; Check: WantClaude
+Source: "..\.claude\settings.json"; DestDir: "{app}\.claude"; Flags: ignoreversion; Check: WantClaude
+Source: "..\.claude\settings.local.json.example"; DestDir: "{app}\.claude"; Flags: ignoreversion; Check: WantClaude
+
+; Codex integration -- only when Codex (or Both) is chosen.
+Source: "..\codex\*"; DestDir: "{app}\codex"; Flags: recursesubdirs createallsubdirs ignoreversion; Check: WantCodex
 
 [Run]
 ; Post-copy wiring. Runs as the invoking user so ~/.claude.json is the real user's.
@@ -154,6 +170,20 @@ end;
 function PythonAvailable: Boolean;
 begin
   Result := (PythonExe <> '') and FileExists(PythonExe);
+end;
+
+{ ---- agent-choice gates for conditional [Files] copy ----
+  AgentPage options: 0 = Claude Code, 1 = Codex, 2 = Both. In silent mode the page is
+  still built (InitializeWizard) with index 0, so a silent install = Claude, matching the
+  --agent default passed to configure.py. }
+function WantClaude: Boolean;
+begin
+  Result := (AgentPage = nil) or (AgentPage.SelectedValueIndex = 0) or (AgentPage.SelectedValueIndex = 2);
+end;
+
+function WantCodex: Boolean;
+begin
+  Result := (AgentPage <> nil) and ((AgentPage.SelectedValueIndex = 1) or (AgentPage.SelectedValueIndex = 2));
 end;
 
 { ---- MO2 instance scan (find instances whose gamePath == chosen game folder) ---- }
