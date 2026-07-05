@@ -25,7 +25,7 @@ Built from the ground up for Fallout: New Vegas' engine.
 - **Converts FO3 mods to Tale of Two Wastelands** — master-swap + FormID remap, scripted.
 - **Makes compatibility patches** and resolves load-order conflicts.
 - **Analyzes your saves** (`.fos`) — plugin lists, mod footprint, leftover references.
-- **Debugs crashes** using a built-in knowledge of the FNV stability stack.
+- **Debugs crashes** using a built-in knowledge of the xNVSE stability stack.
 - **Plays alongside you** *(YesMan AI Live Link)* — reads your *running* game's live state, reacts to in-game events, and runs any console command, in real time.
 
 <!-- MEDIA — short GIF (~15s) of Claude building or editing a plugin from a chat prompt: the ask, the dry-run diff, the written .esp. This is the money shot. -->

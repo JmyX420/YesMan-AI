@@ -74,7 +74,7 @@ Open your agent (Claude Code or Codex) in your FNV folder any time — the knowl
 - *"Write a GECK quest script that tracks kills and shows a message every 10."*
 - *"This FO3 mod won't load in my TTW game — convert it."* (`/port-ttw`)
 - *"These two mods both edit the same weapon — make a compatibility patch."* (`/patch-compat`)
-- *"My game CTDs on startup — help me find the culprit."* (checks the stability stack + logs)
+- *"My game CTDs on startup — help me find the culprit."* (checks the xNVSE stability stack + logs)
 - *"Make an MCM menu for my mod with a toggle and a slider."* (`/fnv-mcm`)
 - *"What plugins does this save still reference from a mod I removed?"* (`/fnv-save`)
 
