@@ -7,7 +7,7 @@ A first-session walkthrough for YesMan AI.
 - **Node.js** (for the ESP/save tools). `node --version` should work.
 - **Python 3** on PATH (for the Live Link relay + the installer's configuration step).
 - A **Fallout: New Vegas** install, ideally managed by **Mod Organizer 2**.
-- You ran **`YesManAI-Setup-1.0.0.exe`** — it detected your FNV folder, let you pick your agent (Claude Code / Codex / both) and MO2 instance, and installed everything (the toolbox, the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link).
+- You ran **`YesManAI-Setup-1.0.1.exe`** — it detected your FNV folder, let you pick your agent (Claude Code / Codex / both) and MO2 instance, and installed everything (the toolbox, the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link).
 
 ## First session
 1. If you use MO2, (re)start it and enable **FNV MO2 MCP Server** (Settings → Plugins) and the **YesMan AI Live Link** mod in the left pane.

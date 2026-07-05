@@ -45,7 +45,7 @@ YesMan AI orchestrates **publicly available tools** — xEditLib, FNVEdit/xEdit,
 - **[Python 3](https://www.python.org/downloads/)** (tick *Add to PATH*) — for the Live Link relay and the installer's configuration step.
 
 ### 2. Run the installer
-Download **`YesManAI-Setup-1.0.0.exe`** and run it. The wizard:
+Download **`YesManAI-Setup-1.0.1.exe`** and run it. The wizard:
 - **auto-detects your Fallout: New Vegas folder** (confirm or change it),
 - **asks which agent to set up** — Claude Code, Codex, or both,
 - **lists your Mod Organizer 2 instances** and lets you pick the one that manages this game (or choose *I don't use MO2*),

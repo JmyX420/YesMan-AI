@@ -11,7 +11,7 @@
 
 #define AppName "YesMan AI"
 #define AppNameLong "YesMan AI - A FNV Modding Toolbox for Claude and Codex"
-#define AppVersion "1.0.0"
+#define AppVersion "1.0.1"
 #define AppPublisher "JmyX"
 
 [Setup]
