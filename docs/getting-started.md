@@ -3,20 +3,20 @@
 A first-session walkthrough for YesMan AI.
 
 ## Before you start
-- **Claude Code** installed and signed in.
+- **Claude Code and/or Codex** installed and signed in.
 - **Node.js** (for the ESP/save tools). `node --version` should work.
 - **Python 3** on PATH (for the Live Link relay + the installer's configuration step).
 - A **Fallout: New Vegas** install, ideally managed by **Mod Organizer 2**.
-- You ran **`YesManAI-Setup-1.0.0.exe`** — it detected your FNV folder, let you pick your MO2 instance, and installed everything (the toolbox, the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link).
+- You ran **`YesManAI-Setup-1.0.0.exe`** — it detected your FNV folder, let you pick your agent (Claude Code / Codex / both) and MO2 instance, and installed everything (the toolbox, the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link).
 
 ## First session
 1. If you use MO2, (re)start it and enable **FNV MO2 MCP Server** (Settings → Plugins) and the **YesMan AI Live Link** mod in the left pane.
-2. Open a terminal in your FNV folder and run `claude` (or open the Claude Code app there). The installer already filled `CLAUDE.md`, installed the hooks, and registered the MCP servers — nothing to paste.
-3. Sanity-check the ESP backbone: *"read FalloutNV.esm and tell me how many records it has."* Claude runs `node examples/inspect-esp.js` under the hood.
-4. Ask Claude which external modding tools you have vs. need (FNVEdit, BSArch, oggenc2, NifSkope, the GECK) for full AutoMod CLI coverage.
+2. Open a terminal in your FNV folder and run `claude` (or `codex`, or open the desktop app there). The installer already filled your agent's instruction file (`CLAUDE.md` / `AGENTS.md`), installed the hooks, and registered the MCP servers — nothing to paste. (For Codex the game folder is a trusted project, so its `.codex/` hooks + `.agents/skills` load.)
+3. Sanity-check the ESP backbone: *"read FalloutNV.esm and tell me how many records it has."* The agent runs `node examples/inspect-esp.js` under the hood.
+4. Ask the agent which external modding tools you have vs. need (FNVEdit, BSArch, oggenc2, NifSkope, the GECK) for full AutoMod CLI coverage.
 
 ## What loads automatically every session
-- `CLAUDE.md` — project rules, paths, the confidence system, safety rules.
+- `CLAUDE.md` / `AGENTS.md` — project rules, paths, the confidence system, safety rules.
 - `KNOWLEDGEBASE.md` — the FNV reference (consulted before changes).
 - The `fnv-context` skill — injects the top gotchas when you touch FNV files.
 - The safety hooks — backups + edit confirmation + ESP/ESM/BSA write blocking.

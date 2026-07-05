@@ -1,6 +1,6 @@
 ---
 name: fnv-live-link
-description: Read state from, react to events in, two-way text-chat with the player in, and command a RUNNING Fallout New Vegas game in real time via the YesMan AI Live Link MCP server (mcp__fnv-link__* tools). Use when the user wants Claude to observe, control, chat inside, or play alongside their live FNV session.
+description: Read state from, react to events in, two-way text-chat with the player in, and command a RUNNING Fallout New Vegas game in real time via the YesMan AI Live Link MCP server (the fnv-link MCP tools). Use when the user wants the assistant to observe, control, chat inside, or play alongside their live FNV session.
 ---
 
 # YesMan AI Live Link — operating a running game
@@ -8,7 +8,7 @@ description: Read state from, react to events in, two-way text-chat with the pla
 The live link exposes the running game through the **`fnv-link` MCP server** (tools named
 `fnv_*`). If those tools aren't present, the game isn't running / the mod isn't enabled — point
 the user to `live-link/README.md` (enable the **YesMan AI Live Link** mod in MO2, launch FNV
-with a save loaded, restart Claude Code). The link is a toolbox component that's only active
+with a save loaded, restart your agent). The link is a toolbox component that's only active
 while the game is live; nothing else in the toolbox depends on it.
 
 ## Always start with status
@@ -61,7 +61,7 @@ request with the command tools, then confirm via `fnv_chat_reply`/`fnv_message`)
 `fnv_poll_events` / `fnv_poll_chat` are **on-demand** — you only see what happened when you
 *choose* to call them. For a genuinely live experience (you react as events fire and answer the
 player's chat without them prompting you to poll), arm a **persistent background watch loop** that
-drains the feed for you. In Claude Code that's a background monitor running a long-lived process
+drains the feed for you. In your agent, that's a background monitor running a long-lived process
 which, every ~15s, calls the relay's `Bridge(<bridge-dir>).drain_events()` + `.drain_chat()`
 (reuse `fnv_link_server.bridge` — you inherit its partial-read tolerance + `misc_stat` name
 enrichment) and prints one line per new event/message. Idle play is silent (no token cost); it
@@ -73,7 +73,7 @@ wants to *play alongside* you. Rules that matter:
 - **While the monitor runs, IT is the consumer** — it drains both queues, so do NOT also call
   `fnv_poll_events`/`fnv_poll_chat` yourself, or you'll double-drain and the monitor will miss
   items.
-- **Session-scoped, no persistence.** It dies on a Claude restart and can crash or be culled
+- **Session-scoped, no persistence.** It dies on an agent restart and can crash or be culled
   **silently, with no notification**. Re-arm it each session (the user says "arm the live feed").
 - **Verify before you claim it's running.** Never assume — check the background task's status
   first (a silent death looks identical to a quiet game). If you can't confirm it's alive, say so

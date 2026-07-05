@@ -1,0 +1,35 @@
+{
+  "//": "YesMan AI safety hooks for Codex. Installed to <game>/.codex/hooks.json by",
+  "//2": "installer/configure.py --agent codex, which fills {{GAME_ROOT}} and marks the",
+  "//3": "project trusted so project-scoped hooks load. Mirrors .claude/settings.json.",
+  "PreToolUse": [
+    {
+      "matcher": "Bash",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash \"{{GAME_ROOT}}/.codex/hooks/protect-bash.sh\"",
+          "timeout": 5,
+          "statusMessage": "Checking command safety..."
+        }
+      ]
+    },
+    {
+      "matcher": "apply_patch",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash \"{{GAME_ROOT}}/.codex/hooks/protect-files.sh\"",
+          "timeout": 5,
+          "statusMessage": "Checking file protection..."
+        },
+        {
+          "type": "command",
+          "command": "bash \"{{GAME_ROOT}}/.codex/hooks/backup-before-edit.sh\"",
+          "timeout": 5,
+          "statusMessage": "Backing up file..."
+        }
+      ]
+    }
+  ]
+}

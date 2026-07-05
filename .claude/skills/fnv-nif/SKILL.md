@@ -7,7 +7,7 @@ paths: "**/*.nif,Data/meshes/**"
 # NIF Mesh Operations (FNV)
 
 > **Preferred for inspect / same-length retexture:** `bash tools/automod-cli.sh nif <info|list-textures|replace-textures> ... --json` (self-built, auto-`.bak`) — see `docs/automod-cli.md`. Different-length edits, node renames, and geometry/collision → NifSkope (below).
-> **With the MO2 MCP running** (`mcp__mo2__*` present): prefer `mo2_nif_info` / `mo2_nif_list_textures` / `mo2_nif_shader_info` for inspection — they take a **VFS path** and resolve the mod-provided mesh for you.
+> **With the MO2 MCP running** (the mo2 MCP tools present): prefer `mo2_nif_info` / `mo2_nif_list_textures` / `mo2_nif_shader_info` for inspection — they take a **VFS path** and resolve the mod-provided mesh for you.
 
 FNV meshes are **Gamebryo NIF, file version `20.2.0.7` (User 11 / BS 34)** — the same version FO3 uses; **same number as Skyrim LE but NOT interchangeable**. See `KNOWLEDGEBASE.md → NIF Meshes`.
 

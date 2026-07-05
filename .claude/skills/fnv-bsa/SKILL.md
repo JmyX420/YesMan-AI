@@ -7,7 +7,7 @@ paths: "**/*.bsa"
 # BSA Archive Operations (FNV)
 
 > **Preferred:** `bash tools/automod-cli.sh bsa <list|unpack|pack|extract-file> ... --json` (wraps BSArch, auto-detected) — see `docs/automod-cli.md`. Raw BSArch usage below for reference.
-> **With the MO2 MCP running** (`mcp__mo2__*` present): prefer `mo2_list_bsa` / `mo2_extract_bsa` / `mo2_extract_bsa_file` / `mo2_validate_bsa` — they take a **VFS path** and resolve it for you, and extracts land in the output mod.
+> **With the MO2 MCP running** (the mo2 MCP tools present): prefer `mo2_list_bsa` / `mo2_extract_bsa` / `mo2_extract_bsa_file` / `mo2_validate_bsa` — they take a **VFS path** and resolve it for you, and extracts land in the output mod.
 
 FNV uses **BSA only** (older archive version — **no BA2**). Use **BSArch** (public CLI, ships with xEdit) for archive work.
 

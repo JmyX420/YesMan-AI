@@ -16,7 +16,7 @@ You are working in a Fallout: New Vegas modding environment (Gamebryo engine, **
 
 ## MO2 first (this is usually an MO2 install)
 - **Mods are NOT in `Data/`.** They live in the MO2 instance (`mods/<ModName>/`); the real load order is the MO2 **profile**, not `AppData`. Standalone xEdit/xEditLib only sees vanilla `Data/` unless run **through MO2**. (See the MO2 section in `KNOWLEDGEBASE.md`.)
-- **Detect-and-prefer the MO2 MCP.** If `mcp__mo2__*` tools are present, the bundled MO2 plugin is running → prefer them for anything MO2-aware (load order, VFS file reads, **records/conflicts on the modded order**, compatibility patches) — they sidestep the "not in `Data/`" problem. If absent (MO2 closed, or a non-MO2 setup), fall back to the CLI/through-MO2 paths; nothing requires the MCP at runtime. See **CLAUDE.md → MO2 MCP server**.
+- **Detect-and-prefer the MO2 MCP.** If the mo2 MCP tools are present, the bundled MO2 plugin is running → prefer them for anything MO2-aware (load order, VFS file reads, **records/conflicts on the modded order**, compatibility patches) — they sidestep the "not in `Data/`" problem. If absent (MO2 closed, or a non-MO2 setup), fall back to the CLI/through-MO2 paths; nothing requires the MCP at runtime. See **CLAUDE.md / AGENTS.md → MO2 MCP server**.
 
 ## Top gotchas
 1. **One script per form** — unlike Papyrus; use a quest script, scripted token, or NVSE `SetEventHandler` for multiple behaviors.

@@ -8,7 +8,7 @@ argument-hint: <PluginName.esp>
 
 Inspect the plugin specified by `$ARGUMENTS` and give a structured summary. Uses **xEditLib in FNV mode (`GM_FNV=0`)** — there is no Spriggit/YAML path for FNV.
 
-**Detect-and-prefer the MO2 MCP.** If `mcp__mo2__*` tools are available (the bundled MO2 plugin is running — see CLAUDE.md), **prefer them** — they read the plugin on your **live modded load order** with no VFS hassle (they stage the plugin + its masters automatically):
+**Detect-and-prefer the MO2 MCP.** If the mo2 MCP tools are available (the bundled MO2 plugin is running — see CLAUDE.md / AGENTS.md), **prefer them** — they read the plugin on your **live modded load order** with no VFS hassle (they stage the plugin + its masters automatically):
 - `mo2_query_records "$ARGUMENTS" [--sig WEAP] [--match …]` → records the plugin defines/overrides.
 - `mo2_record_detail "$ARGUMENTS" <EditorID|FormID>` → full field tree of one record (resolved references).
 - `mo2_plugin_info "$ARGUMENTS"` → masters, load order, flags, missing-master check.

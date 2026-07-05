@@ -7,7 +7,7 @@ paths: "**/*.ogg,**/*.lip,**/*.fuz,Data/Sound/**"
 # Audio / Voice Operations (FNV)
 
 > **Preferred:** `bash tools/automod-cli.sh audio wav-to-ogg <in.wav> <out.ogg> --json` (24kHz mono via oggenc2, auto-detected) and `audio info` — see `docs/automod-cli.md`. `.lip` is GECK-only.
-> **With the MO2 MCP running** (`mcp__mo2__*` present): prefer `mo2_audio_info` (ogg/wav, VFS path) and `mo2_convert_audio` (wav→ogg into the output mod).
+> **With the MO2 MCP running** (the mo2 MCP tools present): prefer `mo2_audio_info` (ogg/wav, VFS path) and `mo2_convert_audio` (wav→ogg into the output mod).
 
 FNV uses **no FUZ and no XWM** (unlike Skyrim). See `KNOWLEDGEBASE.md → Audio / Voice Files`.
 

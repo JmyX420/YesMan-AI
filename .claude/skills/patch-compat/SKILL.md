@@ -8,7 +8,7 @@ argument-hint: "[plugins or load order to reconcile]"
 
 Find and resolve record conflicts for `$ARGUMENTS`, then produce a patch.
 
-**Detect-and-prefer the MO2 MCP.** If `mcp__mo2__*` tools are available (the bundled MO2 plugin is running — see CLAUDE.md), use them — they read your **live modded load order** directly. Otherwise fall back to FNVEdit / xEditLib (`GM_FNV=0`), Wrye Flash, LOOT — everything below works either way.
+**Detect-and-prefer the MO2 MCP.** If the mo2 MCP tools are available (the bundled MO2 plugin is running — see CLAUDE.md / AGENTS.md), use them — they read your **live modded load order** directly. Otherwise fall back to FNVEdit / xEditLib (`GM_FNV=0`), Wrye Flash, LOOT — everything below works either way.
 
 ## 1. Detect conflicts
 **Preferred (MCP running):**

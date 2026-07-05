@@ -1,4 +1,4 @@
-; YesMan AI - A FNV Modding Toolbox for Claude
+; YesMan AI - A FNV Modding Toolbox for Claude and Codex
 ; Inno Setup installer script.
 ;
 ; Front-end for the unified configurator (installer\configure.py): copies the whole
@@ -10,7 +10,7 @@
 ; Output: dist\YesManAI-Setup-<version>.exe
 
 #define AppName "YesMan AI"
-#define AppNameLong "YesMan AI - A FNV Modding Toolbox for Claude"
+#define AppNameLong "YesMan AI - A FNV Modding Toolbox for Claude and Codex"
 #define AppVersion "1.0.0"
 #define AppPublisher "JmyX"
 
@@ -66,6 +66,7 @@ Filename: "{code:GetPython}"; \
 [Code]
 var
   PythonExe: String;
+  AgentPage: TInputOptionWizardPage;   // which AI coding agent(s) to wire up
   MO2Page: TInputOptionWizardPage;
   MO2Dirs: TStringList;      // ModOrganizer.exe folder for each detected NV instance
   MO2Profiles: TStringList;  // matching selected_profile
@@ -236,7 +237,18 @@ begin
   MO2Profiles := TStringList.Create;
   NoMO2Index := -1;  { -1 until the page is actually built; guards silent installs }
   MO2PageBuilt := False;
-  MO2Page := CreateInputOptionPage(wpSelectDir,
+  { Agent picker (static options, built here so it's valid even in silent mode) }
+  AgentPage := CreateInputOptionPage(wpSelectDir,
+    'AI Coding Agent', 'Which agent should YesMan AI set up?',
+    'YesMan AI can wire up Claude Code, Codex, or both. This chooses which instruction '
+    + 'file, skills, safety hooks, and MCP configuration get installed.',
+    True, False);
+  AgentPage.Add('Claude Code');
+  AgentPage.Add('Codex');
+  AgentPage.Add('Both (Claude Code + Codex)');
+  AgentPage.SelectedValueIndex := 0;
+  { MO2 picker comes after the agent choice }
+  MO2Page := CreateInputOptionPage(AgentPage.ID,
     'Mod Organizer 2', 'Which MO2 instance should YesMan AI wire up?',
     'YesMan AI installs a live MO2 companion (conflict analysis, patches) and the live-link '
     + 'game mod. Choose the MO2 instance that manages this Fallout: New Vegas folder. '
@@ -287,6 +299,13 @@ begin
   Result := '"' + ExpandConstant('{app}\installer\configure.py') + '"'
     + ' --game-root "' + ExpandConstant('{app}') + '"'
     + ' --python "' + PythonExe + '"';
+  { agent choice (defaults to claude if the page wasn't shown, e.g. silent mode) }
+  if AgentPage <> nil then
+  begin
+    if AgentPage.SelectedValueIndex = 1 then Result := Result + ' --agent codex'
+    else if AgentPage.SelectedValueIndex = 2 then Result := Result + ' --agent both'
+    else Result := Result + ' --agent claude';
+  end;
   { Only pass an MO2 choice when the picker page was actually shown+built. In silent
     mode the page never builds, so we pass nothing and let configure.py auto-detect. }
   if MO2PageBuilt then

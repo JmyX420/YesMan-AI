@@ -41,45 +41,80 @@ from .tools_records import register_record_tools
 # Dropped for FNV: Papyrus compilation (FNV has no Papyrus — GECK script lives in-plugin).
 
 
-def _ensure_claude_mcp_config(port: int) -> None:
-    """Register this server as a user-scoped MCP server in ~/.claude.json.
+def _ensure_mcp_config(port: int) -> None:
+    """Register this server (`mo2`) with every AI agent installed on this machine.
 
-    Claude Code stores user-scoped MCP servers under the top-level `mcpServers`
-    key of ~/.claude.json. Registering there makes the server discoverable from
-    any project directory without per-project `.mcp.json` files. The key is "mo2"
-    so the FNV toolbox's skills can detect-and-prefer it (mcp__mo2__* tools).
-
-    Atomic write (temp file + os.replace). Skips silently if the file does not
-    exist (Claude Code not installed) or on any error — server startup must never
-    fail because of this.
+    The server's port is a plugin setting the user can change, so the registration must
+    track the LIVE port. We therefore (re)write it on each MO2 start into whichever agent
+    config files exist — Claude Code's `~/.claude.json` and/or Codex's
+    `~/.codex/config.toml`. Registering with "whatever is present" keeps the plugin
+    agent-agnostic (a machine with both agents gets both). Each writer is best-effort and
+    must NEVER raise — server startup can't fail because of this.
     """
+    _ensure_claude_json(port)
+    _ensure_codex_toml(port)
+
+
+def _ensure_claude_json(port: int) -> None:
+    """Register mo2 (http) under `mcpServers` in ~/.claude.json (JSON). Skips if the file
+    is absent (Claude Code not installed). Atomic write; never raises. The key is "mo2"
+    so the toolbox's skills can detect-and-prefer it."""
     try:
         config_path = os.path.expanduser("~/.claude.json")
         if not os.path.isfile(config_path):
             return
-
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
-
-        entry = {
-            "type": "http",
-            "url": f"http://127.0.0.1:{port}/mcp",
-        }
+        entry = {"type": "http", "url": f"http://127.0.0.1:{port}/mcp"}
         servers = config.setdefault("mcpServers", {})
         if servers.get("mo2") == entry:
             return
-
         servers["mo2"] = entry
-
         tmp_path = config_path + ".mo2-tmp"
         with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2)
             f.write("\n")
         os.replace(tmp_path, config_path)
-
         qInfo(f"{PLUGIN_NAME}: registered MCP server with Claude Code in {config_path}")
     except Exception as exc:
         qWarning(f"{PLUGIN_NAME}: failed to update Claude Code MCP config: {exc}")
+
+
+def _ensure_codex_toml(port: int) -> None:
+    """Register mo2 (http) as `[mcp_servers.mo2]` in ~/.codex/config.toml (TOML). Skips if
+    the file is absent (Codex not installed / the toolbox's Codex variant not configured —
+    the installer creates it). Text-based upsert of just our table, so the rest of the
+    user's config (comments, other servers, project trust) is preserved. Atomic; never raises.
+    """
+    try:
+        config_path = os.path.expanduser("~/.codex/config.toml")
+        if not os.path.isfile(config_path):
+            return
+        with open(config_path, "r", encoding="utf-8") as f:
+            text = f.read()
+        url_line = f'url = "http://127.0.0.1:{port}/mcp"'
+        block = f"[mcp_servers.mo2]\n{url_line}\n"
+        # our table = the header line through to just before the next top-level table or EOF
+        pat = re.compile(r'(?ms)^[ \t]*\[mcp_servers\.mo2\][ \t]*$.*?(?=^[ \t]*\[|\Z)')
+        existing = pat.search(text)
+        if existing:
+            if url_line in existing.group(0):
+                return  # already registered with the current port
+            new_text = pat.sub(lambda _m: block, text, count=1)
+        else:
+            new_text = text
+            if new_text and not new_text.endswith("\n"):
+                new_text += "\n"
+            if new_text:
+                new_text += "\n"
+            new_text += block
+        tmp_path = config_path + ".mo2-tmp"
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            f.write(new_text)
+        os.replace(tmp_path, config_path)
+        qInfo(f"{PLUGIN_NAME}: registered MCP server with Codex in {config_path}")
+    except Exception as exc:
+        qWarning(f"{PLUGIN_NAME}: failed to update Codex MCP config: {exc}")
 
 
 # Executables exempt from the auto-stop-before-launch behavior.
@@ -135,7 +170,7 @@ class Mo2McpPlugin(mobase.IPluginTool):
             return
         if self._start_server_core():
             port = self._organizer.pluginSetting(self.name(), "port")
-            _ensure_claude_mcp_config(port)
+            _ensure_mcp_config(port)
             qInfo(f"{PLUGIN_NAME}: auto-started server on port {port}")
         else:
             qWarning(f"{PLUGIN_NAME}: auto-start failed (port in use?)")
@@ -229,7 +264,7 @@ class Mo2McpPlugin(mobase.IPluginTool):
                 f"Failed to start MCP server on port {port}.",
             )
             return
-        _ensure_claude_mcp_config(port)
+        _ensure_mcp_config(port)
         QMessageBox.information(
             self._parent_widget,
             PLUGIN_NAME,
@@ -291,7 +326,7 @@ class Mo2McpPlugin(mobase.IPluginTool):
         qInfo(f"{PLUGIN_NAME}: restarting server after {app_path} exited (code {exit_code})")
         if self._start_server_core():
             port = self._organizer.pluginSetting(self.name(), "port")
-            _ensure_claude_mcp_config(port)
+            _ensure_mcp_config(port)
             qInfo(f"{PLUGIN_NAME}: server restarted successfully")
         else:
             qWarning(f"{PLUGIN_NAME}: failed to restart server after launch")

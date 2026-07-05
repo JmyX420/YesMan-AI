@@ -5,14 +5,14 @@
 
 ---
 
-## YesMan AI - A FNV Modding Toolbox for Claude
+## YesMan AI - A FNV Modding Toolbox for Claude and Codex
 
 <!-- MEDIA — Hero banner (~1000px wide). Suggested: New Vegas + Claude Code branding with the tagline below. Replace the placeholder path on upload. -->
 ![YesMan AI banner — TODO](media/banner.png)
 
 **Turn your Fallout: New Vegas install into an AI-assisted modding workshop.**
 
-This isn't a guide — it's a complete, ready-to-run environment. [Claude Code](https://claude.com/claude-code) (Anthropic's AI coding assistant) becomes a New Vegas modding expert that can write plugins, GECK and xNVSE scripts, build entire mods for you, debug crashes, convert Fallout 3 mods to TTW, and make compatibility patches — all on your own machine, with safety guardrails so it doesn't break your game.
+This isn't a guide — it's a complete, ready-to-run environment. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a New Vegas modding expert that can write plugins, GECK and xNVSE scripts, build entire mods for you, debug crashes, convert Fallout 3 mods to TTW, and make compatibility patches — all on your own machine, with safety guardrails so it doesn't break your game.
 
 Built from the ground up for Fallout: New Vegas' engine.
 
@@ -77,7 +77,7 @@ Needs the NVSE stack (incl. JIP PP LN) — see **Install** below.
 Most FNV-specific tools are only needed for the tasks that use them, and the installer sets up the core backend for you. The full picture:
 
 **You provide (core):**
-- A **Claude subscription** (Pro/Max) + [**Claude Code**](https://claude.com/claude-code) — the assistant that runs everything.
+- An **AI coding agent** — [**Claude Code**](https://claude.com/claude-code) (a Claude Pro/Max subscription) and/or [**OpenAI Codex**](https://developers.openai.com/codex). The installer sets up whichever you choose.
 - [**Node.js**](https://nodejs.org/) — powers the ESP/save tooling and the AutoMod CLI.
 - [**Python 3**](https://www.python.org/downloads/) — for the Live Link relay and the installer's configuration step.
 - **Fallout: New Vegas**, ideally with **Mod Organizer 2** + **xNVSE**.
@@ -85,7 +85,7 @@ Most FNV-specific tools are only needed for the tasks that use them, and the ins
 **The installer sets up for you** (no manual steps):
 - **jq** — used by the safety hooks.
 - **xEditLib** (the `xeditlib` npm package — bundles `XEditLib.dll` + `FalloutNV.Hardcoded.dat`) — the plugin read/edit engine.
-- **The MO2 MCP plugin and the YesMan AI Live Link** — deployed into your chosen MO2 instance and registered with Claude Code.
+- **The MO2 MCP plugin and the YesMan AI Live Link** — deployed into your chosen MO2 instance and registered with your chosen agent(s) (`~/.claude.json` and/or `~/.codex/config.toml`).
 
 **Optional external tools** — the AutoMod CLI auto-detects these and warns if one's missing; nothing breaks without them, you only need the ones for features you use:
 - **FNVEdit / xEdit** — advanced record work + Apply Scripts.
@@ -107,12 +107,12 @@ Most FNV-specific tools are only needed for the tasks that use them, and the ins
 
 ### Install
 
-1. Install **Claude Code**, **Node.js**, and **Python 3** (tick *Add to PATH*).
-2. Run **`YesManAI-Setup.exe`**. The wizard auto-detects your Fallout: New Vegas folder, lets you pick the **Mod Organizer 2 instance** that manages it (or choose *I don't use MO2*), then installs the whole toolbox — the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link — and registers the MCP servers with Claude Code.
-3. **Restart Claude Code.** If you use MO2, restart it and enable **FNV MO2 MCP Server** (Settings → Plugins) and the **YesMan AI Live Link** mod in the left pane.
-4. Open Claude Code in your FNV folder. (Paste `SETUP_PROMPT.txt` for a guided first-session check.) Done.
+1. Install **Claude Code** and/or **Codex**, plus **Node.js** and **Python 3** (tick *Add to PATH*).
+2. Run **`YesManAI-Setup.exe`**. The wizard auto-detects your Fallout: New Vegas folder, **asks which agent to set up** (Claude Code / Codex / both), lets you pick the **Mod Organizer 2 instance** that manages it (or choose *I don't use MO2*), then installs the whole toolbox — the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link — and registers the MCP servers with your chosen agent(s).
+3. **Restart your agent** (Claude Code / Codex). If you use MO2, restart it and enable **FNV MO2 MCP Server** (Settings → Plugins) and the **YesMan AI Live Link** mod in the left pane.
+4. Open your agent in your FNV folder. (Paste `SETUP_PROMPT.txt` for a guided first-session check.) Done.
 
-*The Live Link is only active while FNV is running with a save loaded, and needs the NVSE stack incl. JIP PP LN — see `live-link/README.md`. Advanced users can run the configurator directly instead of the `.exe`: `python installer/configure.py --game-root "<FNV folder>"`.*
+*The Live Link is only active while FNV is running with a save loaded, and needs the NVSE stack incl. JIP PP LN — see `live-link/README.md`. Advanced users can run the configurator directly instead of the `.exe`: `python installer/configure.py --game-root "<FNV folder>" --agent both`.*
 
 ### Notes
 
