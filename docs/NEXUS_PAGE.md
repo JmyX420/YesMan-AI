@@ -19,6 +19,7 @@ Built from the ground up for Fallout: New Vegas' engine.
 - **Writes GECK scripts** — (`SCPT`/`SCTX`, NVSE).
 - **Writes _and compiles_ native plugins** — with Visual Studio installed, it can author *and* build a complete xNVSE script-extender plugin (`.dll`), not just GECK scripts.
 - **Builds mods from a text description** — records, scripts, MCM menus, assets, etc.
+- **Handles mod assets** — packs/unpacks **BSA** archives, inspects **NIF** meshes and swaps their texture paths, and converts audio to Fallout: New Vegas' **24 kHz mono OGG** voice/SFX format.
 - **Converts FO3 mods to Tale of Two Wastelands** — master-swap + FormID remap, scripted.
 - **Makes compatibility patches** and resolves load-order conflicts.
 - **Analyzes your saves** (`.fos`) — plugin lists, mod footprint, leftover references.
