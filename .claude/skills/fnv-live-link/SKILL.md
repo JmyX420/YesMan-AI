@@ -57,19 +57,28 @@ The player presses **`\`** (Backslash) in-game to open a text box and type a mes
 A typical loop: `fnv_poll_chat` → read the player's message → `fnv_chat_reply` (or act on a
 request with the command tools, then confirm via `fnv_chat_reply`/`fnv_message`).
 
-## Real-time feedback — arm a live-feed monitor (for a true hands-free experience)
+## Real-time feedback — the live monitor MUST auto-respond (not just capture)
 `fnv_poll_events` / `fnv_poll_chat` are **on-demand** — you only see what happened when you
-*choose* to call them. For a genuinely live experience (you react as events fire and answer the
-player's chat without them prompting you to poll), arm a **persistent background watch loop** that
-drains the feed for you. In your agent, that's a background monitor running a long-lived process
-which, every ~15s, calls the relay's `Bridge(<bridge-dir>).drain_events()` + `.drain_chat()`
-(reuse `fnv_link_server.bridge` — you inherit its partial-read tolerance + `misc_stat` name
-enrichment) and prints one line per new event/message. Idle play is silent (no token cost); it
-only emits on activity, ≤15s latency. **Cap the output** (e.g. ≤12 event lines/tick + an
-`(+N more)` summary) so a firefight can't trip the harness's too-many-events auto-stop.
+*choose* to call them. **Whenever the user asks you to "arm the live feed" — or otherwise use the
+link for a live/play-alongside session — you MUST set up BOTH halves. Never just one:**
 
-This is what makes the link feel alive rather than poll-on-request — offer it whenever the user
-wants to *play alongside* you. Rules that matter:
+1. **A drain monitor** — a persistent background watch loop that, every ~5–15s, calls the relay's
+   `Bridge(<bridge-dir>).drain_events()` + `.drain_chat()` (reuse `fnv_link_server.bridge` — you
+   inherit its partial-read tolerance + `misc_stat` name enrichment) and logs one line per new
+   event/message. Idle play is silent (no token cost); it only emits on activity. **Cap the
+   output** (e.g. ≤12 event lines/tick + an `(+N more)` summary) so a firefight can't trip the
+   harness's too-many-events auto-stop.
+2. **An auto-responder** — a recurring **self-check** (e.g. a scheduled self-wakeup every ~5–15s)
+   where you READ that feed and ACT on anything new — reply to chat, react to events — **on your
+   own, without the user prompting you.** Keep it running until the user says to stop.
+
+**⛔ NEVER arm only the passive monitor and then wait to be told to check the feed.** The user
+having to ask "did you get my message?" defeats the entire purpose of a live link. The monitor
+*captures*; the auto-responder is what makes it *live* — the two are one feature, always paired.
+If you genuinely can't sustain the auto-responder, say so plainly up front rather than leaving the
+user to babysit you.
+
+Rules that matter:
 - **While the monitor runs, IT is the consumer** — it drains both queues, so do NOT also call
   `fnv_poll_events`/`fnv_poll_chat` yourself, or you'll double-drain and the monitor will miss
   items.
@@ -82,6 +91,20 @@ wants to *play alongside* you. Rules that matter:
   few events — a quiet feed during a brawl can be normal, not a dead monitor.
 
 ## Act — command tools
+
+**⛔ ALWAYS verify a FormID before you use it — NEVER assume one from memory.** Guessing is how you
+hand the player a Fat Man (`0000432C`) instead of a Missile Launcher (`00004340`). Before ANY
+`fnv_additem` / `fnv_removeitem` / `fnv_equipitem` / `fnv_placeatme` / `fnv_console` command that
+references a FormID, confirm it maps to the intended record — look it up first:
+- `bash tools/automod-cli.sh esp query FalloutNV.esm --sig <WEAP|AMMO|ARMO|MISC|NPC_|...> --match "<name>" --json`
+  to find the right FormID by editor ID / name, or `esp record <plugin> <formID>` to confirm what a
+  specific ID actually is. (With the MO2 MCP running, `mo2_query_records` / `mo2_record_detail` do
+  the same on the live modded order.)
+- This applies to base-game **and** mod-added FormIDs — mod FormIDs are load-order-index prefixed,
+  so resolve them against the **live modded order**, never a memorized value.
+
+Only after the ID is verified do you issue the command.
+
 - **`fnv_console`** — the catch-all. Runs ANY console command the player could type, including
   console-only toggles (`tgm`, `tcl`, `tfc`, `tmm`). Short aliases are auto-translated to full
   names. Use real **FormIDs** (e.g. `player.additem 0000000f 1000`), not editor IDs.
