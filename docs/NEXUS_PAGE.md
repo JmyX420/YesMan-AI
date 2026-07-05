@@ -12,7 +12,7 @@
 
 **Turn your Fallout: New Vegas install into an AI-assisted modding workshop.**
 
-This isn't a guide — it's a complete, ready-to-run environment. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a New Vegas modding expert that can write plugins, GECK and xNVSE scripts, build entire mods for you, debug crashes, convert Fallout 3 mods to TTW, and make compatibility patches — all on your own machine, with safety guardrails so it doesn't break your game.
+This isn't a guide — it's a complete, ready-to-run environment. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a New Vegas modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, convert Fallout 3 mods to TTW and much more — all on your own machine, with safety guardrails so it doesn't break your game.
 
 Built from the ground up for Fallout: New Vegas' engine.
 
