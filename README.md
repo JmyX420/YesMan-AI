@@ -57,6 +57,7 @@ No zip to extract, no prompt to paste, no per-component installers — one wizar
 - **Restart your agent** (Claude Code and/or Codex) so it picks up the MCP servers. Codex reads the toolbox via `AGENTS.md` + `~/.codex/config.toml` (the installer marks the game folder a trusted Codex project, so its skills, hooks, and MCP config load).
 - **If you use MO2:** restart it, then enable **FNV MO2 MCP Server** (Settings → Plugins) and the **YesMan AI Live Link** mod in the left pane.
 - The Live Link also needs the NVSE stack incl. **JIP PP LN** — see `live-link/README.md`.
+- **For the Live Link's real-time experience, ask your agent to "arm the live feed."** By default it only sees in-game events and your chat when it *polls*; arming sets up a background monitor so it reacts to events and answers your in-game chat on its own. It's per-session — re-arm it each time you start a new session.
 
 Open your agent in your FNV folder and start modding. **That's it.**
 
