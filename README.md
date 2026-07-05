@@ -105,6 +105,6 @@ FNV is a **different engine**: NVSE (not SKSE), GECK script stored inside plugin
 MIT — see `LICENSE`.
 
 ## Credits
-Created by **JmyX**.
+Created by **JmyX**. Developed with [Claude Code](https://claude.com/claude-code) (Claude Opus 4.8).
 
 Adapted from the **Skyrim Claude Code Toolkit by WingedGuardian** ([skyrimvr-claude-toolkit](https://github.com/WingedGuardian/skyrimvr-claude-toolkit), MIT) — this is a ground-up rework for Fallout: New Vegas' engine. xEditLib via [WingedGuardian/xeditlib](https://github.com/WingedGuardian/xeditlib) (engine from xEdit/zEdit). The bundled MO2 MCP server is a Fallout: New Vegas port of **Aaronavich's MO2 MCP Server** ([Claude_MO2](https://github.com/Avick3110/Claude_MO2), MIT) — see `mo2-mcp/NOTICE.md`. The bundled YesMan AI Live Link is a re-architecture of the **SkyLink AI** concept by **Jarvann** ([SkyrimMCP](https://github.com/jarvann/SkryimMCM), MIT) onto FNV's NVSE stack — see `live-link/NOTICE.md`. FNV knowledge sourced from the GECK Wiki, xNVSE, Viva New Vegas, Tale of Two Wastelands, and the FNV modding community.
