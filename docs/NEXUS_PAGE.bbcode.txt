@@ -1,0 +1,135 @@
+[size=6][b]YesMan AI — A FNV Modding Toolbox for Claude and Codex[/b][/size]
+
+[b]Turn your Fallout: New Vegas install into an AI-assisted modding workshop.[/b]
+
+This isn't a guide — it's a complete, ready-to-run environment. [url=https://claude.com/claude-code]Claude Code[/url] or [url=https://developers.openai.com/codex]OpenAI Codex[/url] becomes a New Vegas modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, convert Fallout 3 mods to TTW and much more — all on your own machine, with safety guardrails so it doesn't break your game.
+
+Built from the ground up for Fallout: New Vegas' engine.
+
+[center]◆  ◆  ◆[/center]
+
+[size=5][b]What it does[/b][/size]
+
+[list]
+[*][b]Reads & edits your plugins[/b] programmatically — read, diff, and edit .esp/.esm records directly, validated against real game files.
+[*][b]Writes GECK scripts[/b] — (SCPT/SCTX, NVSE).
+[*][b]Writes and compiles native plugins[/b] — with Visual Studio installed, it can author [i]and[/i] build a complete xNVSE script-extender plugin (.dll), not just GECK scripts.
+[*][b]Builds mods from a text description[/b] — records, scripts, MCM menus, assets, etc.
+[*][b]Converts FO3 mods to Tale of Two Wastelands[/b] — master-swap + FormID remap, scripted.
+[*][b]Makes compatibility patches[/b] and resolves load-order conflicts.
+[*][b]Analyzes your saves[/b] (.fos) — plugin lists, mod footprint, leftover references.
+[*][b]Debugs crashes[/b] using a built-in knowledge of the xNVSE stability stack.
+[*][b]Plays alongside you[/b] [i](YesMan AI Live Link)[/i] — reads your [i]running[/i] game's live state, reacts to in-game events, and runs any console command, in real time.
+[/list]
+
+[size=5][b]What's inside[/b][/size]
+
+[b]One integrated toolbox[/b] — a single installer sets up everything below; there are no separate downloads or add-ons to bolt on. The modding core works on any Fallout: New Vegas + MO2 install:
+
+[list]
+[*]A [b]650+ line FNV knowledgebase[/b], auto-loaded every session and confidence-tagged/sourced.
+[*]An [b]AutoMod CLI[/b] — one JSON-emitting command over [b]11 modules[/b] (esp/mcm/bsa/audio/nif/lod/fomod/crashlog/funcs/ini/build) so routine tasks are one line, with --dry-run on every write.
+[*][b]18 skills[/b] — 16 slash commands (inspect/create/GECK-script/esp-less-mod/NVSE-plugin/nif/bsa/audio/mcm/save/LOD/FOMOD/anim/crashlog/TTW/patching), an always-on context loader, and the Live Link skill.
+[*][b]Safety hooks[/b] — asks before editing game files, hard-blocks direct ESP/ESM/BSA writes, auto-backs-up everything with an audit log.
+[*][b]MO2-aware[/b] — knows your mods live in the MO2 instance, not Data/.
+[/list]
+
+The two components below are [b]installed with the toolbox[/b] (both MIT-licensed). Each simply lights up when its host is available — the MO2 plugin while MO2 is open, the Live Link while the game is running — and the rest of the toolbox works regardless.
+
+[size=4][b]Included — MO2 MCP plugin[/b][/size]
+
+A Mod Organizer 2 plugin that gives your agent live awareness of your [i]real modded load order[/i] (otherwise it sees only vanilla Data/). [b]~26 tools[/b], including:
+
+[list]
+[*][b]Conflict & override analysis[/b] across your whole load order — who wins each record, and why.
+[*][b]One-command compatibility patches[/b] built on the winners.
+[*][b]Record reading on the modded order[/b], plus VFS file access and BSA/NIF/audio/NVSE-DLL inspection.
+[/list]
+
+The skills detect it and prefer it automatically when it's running.
+
+[size=4][b]Included — YesMan AI Live Link[/b][/size]
+
+A real-time channel to your [i]running[/i] game — [b]18 MCP tools[/b], eight esp-less GECK scripts + a small Python relay, no plugin DLL. Your agent can:
+
+[list]
+[*][b]Observe[/b] — read a live [b]23-field[/b] player/world/quest snapshot (position, health, survival needs, gear, caps, active quest…).
+[*][b]React[/b] — receive [b]38 pushed event types[/b]: kills & combat, item pickups/sells/equips, aid use, location discovery, fast-travel, perks, quest/objective progress, VATS/killcam, what NPCs say to you, save/load, and more.
+[*][b]Converse[/b] — two-way in-game [b]text chat[/b] with a persistent, scrollable log (press \ to talk), plus on-screen messages back to you.
+[*][b]Act[/b] — run [b]any command you could type in the console[/b] (tgm, player.additem, anything), or any GECK script snippet.
+[/list]
+
+Needs the NVSE stack (incl. JIP PP LN) — see [b]Requirements[/b] below.
+
+[b]Public tools throughout[/b] — YesMan AI orchestrates xEditLib, FNVEdit, BSArch, NifSkope, oggenc2, the GECK, LOOT, and NVSE. Nothing is locked behind a private service; every part — including the MO2 plugin and the Live Link — is MIT-licensed and installed together by the one installer.
+
+[center]◆  ◆  ◆[/center]
+
+[size=5][b]Requirements[/b][/size]
+
+Most FNV-specific tools are only needed for the tasks that use them, and the installer sets up the core backend for you. The full picture:
+
+[b]You provide (core):[/b]
+[list]
+[*]An [b]AI coding agent[/b] — [url=https://claude.com/claude-code]Claude Code[/url] (a Claude Pro/Max subscription) and/or [url=https://developers.openai.com/codex]OpenAI Codex[/url]. The installer sets up whichever you choose.
+[*][url=https://nodejs.org/]Node.js[/url] — powers the ESP/save tooling and the AutoMod CLI.
+[*][url=https://www.python.org/downloads/]Python 3[/url] — for the Live Link relay and the installer's configuration step.
+[*][b]Fallout: New Vegas[/b], ideally with [b]Mod Organizer 2[/b] + [b]xNVSE[/b].
+[/list]
+
+[b]The installer sets up for you (no manual steps):[/b]
+[list]
+[*][b]jq[/b] — used by the safety hooks.
+[*][b]xEditLib[/b] (the xeditlib npm package — bundles XEditLib.dll + FalloutNV.Hardcoded.dat) — the plugin read/edit engine.
+[*][b]The MO2 MCP plugin and the YesMan AI Live Link[/b] — deployed into your chosen MO2 instance and registered with your chosen agent(s) (~/.claude.json and/or ~/.codex/config.toml).
+[/list]
+
+[b]Optional external tools[/b] — the AutoMod CLI auto-detects these and warns if one's missing; nothing breaks without them, you only need the ones for features you use:
+[list]
+[*][b]FNVEdit / xEdit[/b] — advanced record work + Apply Scripts.
+[*][b]BSArch[/b] — BSA archive packing/unpacking (bsa module).
+[*][b]oggenc2[/b] — audio conversion to FNV's format (audio module).
+[*][b]NifSkope[/b] or a NIF tool — mesh inspection (nif module).
+[*][b]the GECK[/b] — the official editor, for tasks that need it.
+[*][b]LOOT[/b] — load-order sanity checks.
+[*][b]Visual Studio[/b] (with the C++ desktop workload) — required [i]only[/i] to [b]compile native xNVSE plugins[/b] (build module / /nvse-plugin); GECK scripting works without it.
+[/list]
+
+[b]MO2 MCP plugin[/b] (installed with the toolbox — you only provide the host):
+[list]
+[*][b]Mod Organizer 2[/b] — the installer deploys the plugin into the MO2 instance you pick; it runs in MO2's own Python (no separate Python needed) and reuses the Node/AutoMod backend and agent above. Enable [b]FNV MO2 MCP Server[/b] in MO2's plugin settings after install.
+[/list]
+
+[b]YesMan AI Live Link[/b] (scripts + relay installed with the toolbox — you provide the in-game NVSE plugins):
+[list]
+[*][i]In-game, required:[/i] [b]xNVSE 6.21+[/b] and [b]JIP PP LN[/b].
+[*][i]In-game, recommended[/i] — each unlocks more of the 38 event types, and the link degrades gracefully without them: [b]JohnnyGuitar NVSE[/b] (set bJIPFixes = 0 for JIP-PP-LN compatibility — HARD REQUIREMENT), [b]ShowOff NVSE[/b], [b]ITR NVSE[/b].
+[*][i]Optional:[/i] [b]OneTweak But Really Updated[/b] (set Active in background = true so the game keeps running — and the link stays live — while you tab out to chat).
+[*]The eight esp-less scripts and the Python relay are installed automatically; enable the [b]YesMan AI Live Link[/b] mod in MO2 to activate it.
+[/list]
+
+[center]◆  ◆  ◆[/center]
+
+[size=5][b]Install[/b][/size]
+
+[list=1]
+[*]Install [b]Claude Code[/b] and/or [b]Codex[/b], plus [b]Node.js[/b] and [b]Python 3[/b] (tick [i]Add to PATH[/i]).
+[*]Run [b]YesManAI-Setup.exe[/b] (inside the download zip). The wizard auto-detects your Fallout: New Vegas folder, [b]asks which agent to set up[/b] (Claude Code / Codex / both), lets you pick the [b]Mod Organizer 2 instance[/b] that manages it (or choose [i]I don't use MO2[/i]), then installs the whole toolbox — the xEditLib backbone, the MO2 MCP plugin, and the YesMan AI Live Link — and registers the MCP servers with your chosen agent(s).
+[*][b]Restart your agent[/b] (Claude Code / Codex). If you use MO2, restart it and enable [b]FNV MO2 MCP Server[/b] (Settings → Plugins) and the [b]YesMan AI Live Link[/b] mod in the left pane.
+[*]Open your agent in your FNV folder. (Paste SETUP_PROMPT.txt for a guided first-session check.) Done.
+[/list]
+
+[i]Windows may show a SmartScreen warning because the installer is unsigned (it's a free, open-source tool) — click [b]More info → Run anyway[/b]. See READ-ME-FIRST.txt in the download for details and the SHA-256 checksum.[/i]
+
+[i]The Live Link is only active while FNV is running with a save loaded, and needs the NVSE stack incl. JIP PP LN — see live-link/README.md. Advanced users can run the configurator directly instead of the .exe: python installer/configure.py --game-root "<FNV folder>" --agent both[/i]
+
+[size=5][b]Notes[/b][/size]
+
+[list]
+[*]This runs your coding agent locally with your permission for every change; you review before anything is written.
+[*]Always keep your own save/mod backups too — FNV is a fragile engine.
+[/list]
+
+[center]◆  ◆  ◆[/center]
+
+[b]By JmyX.[/b] MIT licensed. [b]Source, issues & contributions: [url=https://github.com/JmyX420/YesMan-AI]github.com/JmyX420/YesMan-AI[/url][/b] — the whole toolbox is open; read every line before you run it. Adapted from the [b]Skyrim Claude Code Toolkit by WingedGuardian[/b] ([url=https://github.com/WingedGuardian/skyrimvr-claude-toolkit]skyrimvr-claude-toolkit[/url], MIT) — reworked from the ground up for Fallout: New Vegas. The bundled MO2 MCP server is an FNV port of [b]Aaronavich's MO2 MCP Server[/b] ([url=https://github.com/Avick3110/Claude_MO2]Claude_MO2[/url], MIT); the Live Link is a re-architecture of the [b]SkyLink AI[/b] concept by [b]Jarvann[/b] ([url=https://github.com/jarvann/SkryimMCM]SkyrimMCP[/url], MIT) onto FNV's NVSE stack. FNV knowledge from the GECK Wiki, xNVSE, Viva New Vegas, Tale of Two Wastelands, and the FNV modding community.

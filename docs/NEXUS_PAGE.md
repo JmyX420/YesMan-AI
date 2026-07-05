@@ -7,9 +7,6 @@
 
 ## YesMan AI - A FNV Modding Toolbox for Claude and Codex
 
-<!-- MEDIA — Hero banner (~1000px wide). Suggested: New Vegas + Claude Code branding with the tagline below. Replace the placeholder path on upload. -->
-![YesMan AI banner — TODO](media/banner.png)
-
 **Turn your Fallout: New Vegas install into an AI-assisted modding workshop.**
 
 This isn't a guide — it's a complete, ready-to-run environment. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a New Vegas modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, convert Fallout 3 mods to TTW and much more — all on your own machine, with safety guardrails so it doesn't break your game.
@@ -28,9 +25,6 @@ Built from the ground up for Fallout: New Vegas' engine.
 - **Debugs crashes** using a built-in knowledge of the xNVSE stability stack.
 - **Plays alongside you** *(YesMan AI Live Link)* — reads your *running* game's live state, reacts to in-game events, and runs any console command, in real time.
 
-<!-- MEDIA — short GIF (~15s) of Claude building or editing a plugin from a chat prompt: the ask, the dry-run diff, the written .esp. This is the money shot. -->
-![Claude building a mod from a prompt — TODO](media/demo-build.gif)
-
 ### What's inside
 
 **One integrated toolbox** — a single installer sets up everything below; there are no separate downloads or add-ons to bolt on. The modding core works on any Fallout: New Vegas + MO2 install:
@@ -45,7 +39,7 @@ The two components below are **installed with the toolbox** (both MIT-licensed).
 
 #### Included — MO2 MCP plugin
 
-A Mod Organizer 2 plugin that gives Claude live awareness of your *real modded load order* (otherwise it sees only vanilla `Data/`). **~26 tools**, including:
+A Mod Organizer 2 plugin that gives your agent live awareness of your *real modded load order* (otherwise it sees only vanilla `Data/`). **~26 tools**, including:
 
 - **Conflict & override analysis** across your whole load order — who wins each record, and why.
 - **One-command compatibility patches** built on the winners.
@@ -53,12 +47,9 @@ A Mod Organizer 2 plugin that gives Claude live awareness of your *real modded l
 
 The skills detect it and prefer it automatically when it's running.
 
-<!-- MEDIA — screenshot of a conflict/override summary or a generated compatibility patch (e.g. mo2_conflict_summary output). -->
-![Load-order conflict analysis — TODO](media/mo2-conflicts.png)
-
 #### Included — YesMan AI Live Link
 
-A real-time channel to your *running* game — **18 MCP tools**, eight esp-less GECK scripts + a small Python relay, no plugin DLL. Claude can:
+A real-time channel to your *running* game — **18 MCP tools**, eight esp-less GECK scripts + a small Python relay, no plugin DLL. Your agent can:
 
 - **Observe** — read a live **23-field** player/world/quest snapshot (position, health, survival needs, gear, caps, active quest…).
 - **React** — receive **38 pushed event types**: kills & combat, item pickups/sells/equips, aid use, location discovery, fast-travel, perks, quest/objective progress, VATS/killcam, what NPCs say to you, save/load, and more.
@@ -66,9 +57,6 @@ A real-time channel to your *running* game — **18 MCP tools**, eight esp-less 
 - **Act** — run **any command you could type in the console** (`tgm`, `player.additem`, anything), or any GECK script snippet.
 
 Needs the NVSE stack (incl. JIP PP LN) — see **Install** below.
-
-<!-- MEDIA — screenshot of the in-game chat window (the scrollable You:/Claude: log + input field + Clear/Close buttons) over live gameplay. -->
-![In-game two-way chat with Claude — TODO](media/chat-window.png)
 
 **Public tools throughout** — YesMan AI orchestrates xEditLib, FNVEdit, BSArch, NifSkope, oggenc2, the GECK, LOOT, and NVSE. Nothing is locked behind a private service; every part — including the MO2 plugin and the Live Link — is MIT-licensed and installed together by the one installer.
 
@@ -116,7 +104,7 @@ Most FNV-specific tools are only needed for the tasks that use them, and the ins
 
 ### Notes
 
-- This runs Claude Code locally with your permission for every change; you review before anything is written.
+- This runs your coding agent locally with your permission for every change; you review before anything is written.
 - Always keep your own save/mod backups too — FNV is a fragile engine.
 
-**By JmyX.** MIT licensed. Issues/contributions welcome. Adapted from the **Skyrim Claude Code Toolkit by WingedGuardian** ([skyrimvr-claude-toolkit](https://github.com/WingedGuardian/skyrimvr-claude-toolkit), MIT) — reworked from the ground up for Fallout: New Vegas. The bundled MO2 MCP server is an FNV port of **Aaronavich's MO2 MCP Server** ([Claude_MO2](https://github.com/Avick3110/Claude_MO2), MIT); the Live Link is a re-architecture of the **SkyLink AI** concept by **Jarvann** ([SkyrimMCP](https://github.com/jarvann/SkryimMCM), MIT) onto FNV's NVSE stack. FNV knowledge from the GECK Wiki, xNVSE, Viva New Vegas, Tale of Two Wastelands, and the FNV modding community.
+**By JmyX.** MIT licensed. **Source, issues & contributions: [github.com/JmyX420/YesMan-AI](https://github.com/JmyX420/YesMan-AI)** — the whole toolbox is open; read every line before you run it. Adapted from the **Skyrim Claude Code Toolkit by WingedGuardian** ([skyrimvr-claude-toolkit](https://github.com/WingedGuardian/skyrimvr-claude-toolkit), MIT) — reworked from the ground up for Fallout: New Vegas. The bundled MO2 MCP server is an FNV port of **Aaronavich's MO2 MCP Server** ([Claude_MO2](https://github.com/Avick3110/Claude_MO2), MIT); the Live Link is a re-architecture of the **SkyLink AI** concept by **Jarvann** ([SkyrimMCP](https://github.com/jarvann/SkryimMCM), MIT) onto FNV's NVSE stack. FNV knowledge from the GECK Wiki, xNVSE, Viva New Vegas, Tale of Two Wastelands, and the FNV modding community.
