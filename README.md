@@ -1,8 +1,8 @@
 # YesMan AI - A FNV Modding Toolbox for Claude and Codex
 
-Turn your Fallout: New Vegas install into an AI-assisted modding workshop. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, and convert FO3 mods to TTW — with safety guardrails so it doesn't break your game.
+Turn your Fallout: New Vegas install into an AI-assisted modding workshop. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, convert FO3 mods to TTW and much more — with safety guardrails so it doesn't break your game.
 
-> **A complete, ready-to-run environment**, not a guide. Run one installer, pick your Mod Organizer 2 instance, and start building. Built from the ground up for Fallout: New Vegas' engine, and for **Mod Organizer 2** setups.
+> **This is a complete, ready-to-run environment**, not a guide. Run one installer, pick your Mod Organizer 2 instance, and start building. Built from the ground up for Fallout: New Vegas' engine, and for **Mod Organizer 2** setups.
 
 ---
 
