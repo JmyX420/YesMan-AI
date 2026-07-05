@@ -33,10 +33,12 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $IssPath  = Join-Path $PSScriptRoot "YesManAI.iss"
 $DistDir  = Join-Path $RepoRoot "dist"
 $License  = Join-Path $RepoRoot "LICENSE"
+$SetupPrompt = Join-Path $RepoRoot "SETUP_PROMPT.txt"
 $GithubUrl = "https://github.com/JmyX420/YesMan-AI"
 
-if (-not (Test-Path $IssPath))    { throw "Cannot find $IssPath" }
-if (-not (Test-Path $License))    { throw "Cannot find $License" }
+if (-not (Test-Path $IssPath))     { throw "Cannot find $IssPath" }
+if (-not (Test-Path $License))     { throw "Cannot find $License" }
+if (-not (Test-Path $SetupPrompt)) { throw "Cannot find $SetupPrompt" }
 
 # --- Read version from the .iss ---
 $verMatch = Select-String -Path $IssPath -Pattern '#define\s+AppVersion\s+"([^"]+)"'
@@ -69,8 +71,9 @@ $Stage = Join-Path $DistDir "_stage-$Version"
 if (Test-Path $Stage) { Remove-Item -Recurse -Force $Stage }
 New-Item -ItemType Directory -Path $Stage | Out-Null
 
-Copy-Item $ExePath  (Join-Path $Stage $ExeName)
-Copy-Item $License  (Join-Path $Stage "LICENSE")
+Copy-Item $ExePath     (Join-Path $Stage $ExeName)
+Copy-Item $License     (Join-Path $Stage "LICENSE")
+Copy-Item $SetupPrompt (Join-Path $Stage "SETUP_PROMPT.txt")
 
 # SHA256.txt (sha256sum-compatible: "<hash>  <filename>")
 "$Sha  $ExeName" | Set-Content -Path (Join-Path $Stage "SHA256.txt") -Encoding ASCII
@@ -94,6 +97,8 @@ HOW TO INSTALL
      Organizer 2 instance that manages it (or "I don't use MO2").
   3. Restart your agent (and MO2, if you use it). See the Nexus page / README
      for the full first-session steps.
+  4. Open your agent in your FNV folder and paste the contents of
+     SETUP_PROMPT.txt (included in this zip) for a guided first-session check.
 
 WINDOWS SMARTSCREEN
   This installer is not code-signed (a certificate costs money; this is a free,
@@ -139,5 +144,6 @@ Write-Host ""
 Write-Host "Contents:" -ForegroundColor Green
 Write-Host "  $ExeName  ($ExeSize)"
 Write-Host "  READ-ME-FIRST.txt"
+Write-Host "  SETUP_PROMPT.txt"
 Write-Host "  LICENSE"
 Write-Host "  SHA256.txt   ($Sha)"
