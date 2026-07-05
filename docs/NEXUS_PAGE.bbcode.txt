@@ -125,6 +125,21 @@ Most FNV-specific tools are only needed for the tasks that use them, and the ins
 
 [i]The Live Link is only active while FNV is running with a save loaded, and needs the NVSE stack incl. JIP PP LN — see live-link/README.md. Advanced users can run the configurator directly instead of the .exe: python installer/configure.py --game-root "<FNV folder>" --agent both[/i]
 
+[b]First-session setup prompt[/b] — paste this into your agent the first time you open it in your FNV folder; it verifies the install and orients you. Ships as SETUP_PROMPT.txt in the toolbox.
+[spoiler][code]I just installed YesMan AI - A FNV Modding Toolbox for Claude and Codex into this Fallout: New Vegas folder using the YesMan AI installer. The installer already filled in my paths, installed the xEditLib backbone, deployed the MO2 MCP plugin and the YesMan AI Live Link, and registered the MCP servers. Help me verify everything and get oriented:
+
+1. Confirm my instruction file (CLAUDE.md for Claude Code, AGENTS.md for Codex) and the safety hooks are fully configured — no leftover {{PLACEHOLDER}} tokens — and that my Mod Organizer 2 instance and active profile are filled in correctly. If anything is unset or looks wrong, find the ModOrganizer.ini whose gamePath points at this folder, read its active profile, and fix it (and the matching guards in the hooks). Confirm with me if unsure.
+
+2. Verify the xEditLib backbone works by running "node examples/inspect-esp.js FalloutNV.esm".
+
+3. Check which external modding tools I already have (FNVEdit/xEdit, BSArch, oggenc2, NifSkope, the GECK) and tell me which ones I'm missing for full AutoMod CLI functionality. (The audio module uses oggenc2, not ffmpeg.)
+
+4. Tell me whether the MO2 MCP tools are available in this session. If they aren't, remind me to enable "FNV MO2 MCP Server" in MO2 -> Settings -> Plugins and restart MO2, then restart your agent (Claude Code / Codex). It only runs while MO2 is open — the rest of the toolbox works without it.
+
+5. Tell me how to use the YesMan AI Live Link when I want it: enable the "YesMan AI Live Link" mod in MO2's left pane, launch FNV via xNVSE with a save loaded, and note it needs the NVSE stack incl. JIP PP LN (point me to live-link/README.md for the full requirements). It's only active while the game is running. IMPORTANT: by default you only see in-game events and my chat when you *poll* for them — so for the Live Link to work as intended (a hands-free, real-time experience where you react to events and answer my in-game chat on your own), I have to ask you to "arm the live feed" and you set up a background monitor that drains the event + chat queues for me. Explain this, and note that it's session-scoped (it dies on an agent restart), so remind me I need to re-arm it at the start of each session.
+
+Explain everything in plain English and ask me any questions you need. Don't edit any game files without showing me first.[/code][/spoiler]
+
 [size=5][b]Notes[/b][/size]
 
 [list]
