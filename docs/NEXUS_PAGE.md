@@ -58,6 +58,8 @@ A real-time channel to your *running* game — **18 MCP tools**, eight esp-less 
 
 Needs the NVSE stack (incl. JIP PP LN) — see **Install** below.
 
+*A note on timing: the Live Link is real-time, but not instantaneous. Even while it's live, the agent still has to read the game's output, think, run any applicable tasks, and compose a reply — so a response can take a few moments. It's a conversation, not a reflex.*
+
 **Public tools throughout** — YesMan AI orchestrates xEditLib, FNVEdit, BSArch, NifSkope, oggenc2, the GECK, LOOT, and NVSE. Nothing is locked behind a private service; every part — including the MO2 plugin and the Live Link — is MIT-licensed and installed together by the one installer.
 
 ### Requirements
@@ -89,7 +91,7 @@ Most FNV-specific tools are only needed for the tasks that use them, and the ins
 
 **YesMan AI Live Link** (scripts + relay installed with the toolbox — you provide the in-game NVSE plugins):
 - *In-game, required:* **xNVSE 6.21+** and **JIP PP LN**.
-- *In-game, recommended* — each unlocks more of the 38 event types, and the link degrades gracefully without them: **JohnnyGuitar NVSE** (set bJIPFixes = 0 for JIP-PP-LN compatibility — HARD REQUIREMENT), **ShowOff NVSE**, **ITR NVSE**.
+- *In-game, recommended* — each unlocks more of the 38 event types, and the link degrades gracefully without them: **JohnnyGuitar NVSE** (**mandatory: set `bJIPFixes = 0` in JohnnyGuitar's INI** — JohnnyGuitar will not function alongside JIP PP LN otherwise), **ShowOff NVSE**, **ITR NVSE**.
 - *Optional:* **OneTweak But Really Updated** (set `Active in background` active = true so the game keeps running — and the link stays live — while you tab out to chat with Claude).
 - The eight esp-less scripts and the Python relay are installed automatically; enable the **YesMan AI Live Link** mod in MO2 to activate it.
 

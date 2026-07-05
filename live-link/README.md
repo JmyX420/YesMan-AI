@@ -72,6 +72,8 @@ and the in-game chat.
 **In-game — recommended** (each unlocks more of the 38 event types; the link degrades
 gracefully without them — those `SetEventHandler` registrations simply no-op):
 - **JohnnyGuitar NVSE** — perks, quest complete/fail, challenge complete, sleep/wait.
+  **Mandatory if installed: set `bJIPFixes = 0` in JohnnyGuitar's INI** — JohnnyGuitar will
+  not function alongside JIP PP LN otherwise.
 - **ShowOff NVSE** — books read, weapon holster/unholster, quest objectives, misc PC stats.
 - **ITR NVSE** — steal, VATS enter/leave, killcam, weapon jams, casino bans.
 
