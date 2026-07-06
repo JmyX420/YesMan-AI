@@ -1,8 +1,20 @@
+<p align="center">
+  <img src="docs/media/banner.png" alt="YesMan AI — A FNV Modding Toolbox for Claude and Codex" width="100%">
+</p>
+
 # YesMan AI - A FNV Modding Toolbox for Claude and Codex
 
 Turn your Fallout: New Vegas install into an AI-assisted modding workshop. [Claude Code](https://claude.com/claude-code) or [OpenAI Codex](https://developers.openai.com/codex) becomes a modding expert that can write ESP plugins, GECK & NVSE scripts, build entire mods, debug crashes, convert FO3 mods to TTW and much more — with safety guardrails so it doesn't break your game.
 
 > **This is a complete, ready-to-run environment**, not a guide. Run one installer, pick your Mod Organizer 2 instance, and start building. Built from the ground up for Fallout: New Vegas' engine, and for **Mod Organizer 2** setups.
+
+## How it fits together
+
+<p align="center">
+  <img src="docs/media/pipeline.png" alt="YesMan AI communication pipeline: you and the AI coding agent, safety hooks, and three channels — the offline AutoMod/xEditLib core, the MO2 MCP for live load-order and conflict data, and the Live Link to your running game — all converging on your modded Fallout: New Vegas install, with a two-way in-game chat loop." width="820">
+</p>
+
+You talk to the agent; every edit passes the safety hooks; three channels — the offline **AutoMod / xEditLib** core, the **MO2 MCP** for live load-order and conflict data, and the **Live Link** to your running game — all converge on your modded install. The Live Link also carries a two-way in-game chat loop.
 
 ---
 
