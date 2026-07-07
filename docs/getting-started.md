@@ -11,7 +11,7 @@ A first-session walkthrough for YesMan AI.
 
 ## First session
 1. If you use MO2, (re)start it and enable **FNV MO2 MCP Server** (Settings → Plugins) and the **YesMan AI Live Link** mod in the left pane.
-2. Open a terminal in your FNV folder and run `claude` (or `codex`, or open the desktop app there). The installer already filled your agent's instruction file (`CLAUDE.md` / `AGENTS.md`), installed the hooks, and registered the MCP servers — nothing to paste. (For Codex the game folder is a trusted project, so its `.codex/` hooks + `.agents/skills` load.)
+2. Open a terminal in your FNV folder and run `claude` (or `codex`, or open the desktop app there). The installer already filled your agent's instruction file (`CLAUDE.md` / `AGENTS.md`), installed the hooks, and registered the MCP servers — no configuration to paste; it works as soon as you open the agent. (Optionally paste `SETUP_PROMPT.txt` for a guided first-session check. For Codex the game folder is a trusted project, so its `.codex/` hooks + `.agents/skills` load.)
 3. Sanity-check the ESP backbone: *"read FalloutNV.esm and tell me how many records it has."* The agent runs `node examples/inspect-esp.js` under the hood.
 4. Ask the agent which external modding tools you have vs. need (FNVEdit, BSArch, oggenc2, NifSkope, the GECK) for full AutoMod CLI coverage.
 

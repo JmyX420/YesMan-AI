@@ -63,7 +63,7 @@ Download **`YesManAI-Setup-1.0.1.exe`** and run it. The wizard:
 - **lists your Mod Organizer 2 instances** and lets you pick the one that manages this game (or choose *I don't use MO2*),
 - copies the toolbox in, installs the **xEditLib backbone** (`npm install`), fills your paths into the agent's instruction file (`CLAUDE.md` / `AGENTS.md`) and the safety hooks, deploys the **MO2 MCP plugin** and the **YesMan AI Live Link**, and registers the MCP servers (in `~/.claude.json` and/or `~/.codex/config.toml`).
 
-No zip to extract, no prompt to paste, no per-component installers — one wizard installs everything.
+No per-component installers to run — one wizard sets up everything in a single pass. (Unzip the download, run the installer, then optionally paste `SETUP_PROMPT.txt` on first launch for a guided check.)
 
 ### 3. Restart and go
 - **Restart your agent** (Claude Code and/or Codex) so it picks up the MCP servers. Codex reads the toolbox via `AGENTS.md` + `~/.codex/config.toml` (the installer marks the game folder a trusted Codex project, so its skills, hooks, and MCP config load).
